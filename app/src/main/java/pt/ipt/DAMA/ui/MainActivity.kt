@@ -1,114 +1,116 @@
 package pt.ipt.DAMA.ui
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
+import android.widget.Toast
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.platform.LocalContext
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
-import pt.ipt.DAMA.ui.theme.DAMATheme
+import pt.ipt.DAMA.R
 import pt.ipt.DAMA.hardware.CameraManager
 import pt.ipt.DAMA.hardware.GpsManager
 
 class MainActivity : ComponentActivity() {
+    /*
+    * Managers for hardware components
+    */
     private lateinit var gpsManager: GpsManager
     private lateinit var cameraManager: CameraManager
 
+    /*
+    * Activity result launcher for requesting multiple permissions
+    */
+    private val activityResultLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+            var allPermissionsGranted = true
+            permissions.entries.forEach {
+                if (!it.value) {
+                    allPermissionsGranted = false
+                }
+            }
+
+            if (allPermissionsGranted) {
+                // All permissions are granted
+                Toast.makeText(this, "All permissions granted", Toast.LENGTH_SHORT).show()
+                // Initialize or start required functionality here
+            } else {
+                // Some permissions are denied
+                showPermissionDeniedDialog()
+            }
+        }
+
+    /*
+    * Initializes the activity
+    */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
         gpsManager = GpsManager(this)
         cameraManager = CameraManager(this)
 
-        enableEdgeToEdge()
-        setContent {
-            DAMATheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    MainScreen(
-                        gpsManager = gpsManager,
-                        cameraManager = cameraManager,
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
-            }
+        if (allPermissionsGranted()) {
+            // All permissions are already granted
+            // Initialize or start required functionality here
+        } else {
+            requestPermissions()
         }
     }
-}
 
-@Composable
-fun MainScreen(gpsManager: GpsManager, cameraManager: CameraManager, modifier: Modifier = Modifier) {
-    val context = LocalContext.current
-
-    var hasLocationPermission by remember { mutableStateOf(false) }
-    var hasCameraPermission by remember { mutableStateOf(false) }
-
-    val locationPermissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission()
-    ) { isGranted: Boolean ->
-        hasLocationPermission = isGranted
+    /*
+    * function to check if all required permissions are granted
+     */
+    private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
+        ContextCompat.checkSelfPermission(
+            baseContext, it
+        ) == PackageManager.PERMISSION_GRANTED
     }
 
-    val cameraPermissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission()
-    ) { isGranted: Boolean ->
-        hasCameraPermission = isGranted
+    /*
+    * function to request permissions
+     */
+    private fun requestPermissions() {
+        activityResultLauncher.launch(REQUIRED_PERMISSIONS)
     }
 
-    Column(modifier = modifier) {
-        Greeting(name = "Android")
-
-        Button(onClick = {
-            when {
-                ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED -> {
-                    gpsManager.getLocation()
+    /*
+    * function to show permission denied dialog
+     */
+    private fun showPermissionDeniedDialog() {
+        AlertDialog.Builder(this)
+            .setTitle("Permissions Required")
+            .setMessage("This app requires Camera and Location permissions to function properly. Please enable them in the app settings.")
+            .setPositiveButton("Go to Settings") { _, _ ->
+                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                    data = Uri.fromParts("package", packageName, null)
                 }
-                else -> {
-                    locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-                }
+                startActivity(intent)
             }
-        }) {
-            Text(text = "Get Location")
-        }
-
-        Button(onClick = {
-            when {
-                ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED -> {
-                    cameraManager.openCamera()
-                }
-                else -> {
-                    cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
-                }
+            .setNegativeButton("Cancel") { dialog, _ ->
+                dialog.dismiss()
             }
-        }) {
-            Text(text = "Open Camera")
-        }
+            .show()
     }
-}
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    DAMATheme {
-        Greeting("Android")
+    /*
+    *companion object
+    *  that defines the required permissions for your app
+    */
+    companion object {
+        private val REQUIRED_PERMISSIONS =
+            mutableListOf(
+                Manifest.permission.CAMERA,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ).apply {
+                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
+                    add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                }
+            }.toTypedArray()
     }
 }
