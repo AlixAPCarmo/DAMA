@@ -3,13 +3,16 @@ package pt.ipt.DAMA.ui
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.bumptech.glide.Glide
 import pt.ipt.DAMA.R
 import pt.ipt.DAMA.hardware.CameraManager
 import pt.ipt.DAMA.hardware.GpsManager
 import pt.ipt.DAMA.model.astronomyAPI.AstronomyPositionResponseDTO
 import pt.ipt.DAMA.model.astronomyAPI.AstronomyRequestDTO
+import pt.ipt.DAMA.model.pexelsImageAPI.ImageResponseDTO
 import pt.ipt.DAMA.retrofit.RetrofitInitializer
 import retrofit2.Call
 import retrofit2.Callback
@@ -25,6 +28,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnLocation: Button
     private lateinit var txt: TextView
     private lateinit var btnpositions : Button
+    private lateinit var img : ImageView
+    private lateinit var btnImage : Button
     private lateinit var astroResponse : AstronomyPositionResponseDTO
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,6 +41,8 @@ class MainActivity : AppCompatActivity() {
         btnLocation = findViewById(R.id.getLocation)
         txt = findViewById(R.id.text)
         btnpositions = findViewById(R.id.getPositions)
+        img = findViewById(R.id.imageView)
+        btnImage = findViewById(R.id.getImage)
 
         btnLocation.setOnClickListener {
             var currentLocation = gpsManager.getCurrentLocation()
@@ -66,8 +73,40 @@ class MainActivity : AppCompatActivity() {
             }
             if (call != null) {
                 processResponse(call)
+
+
             }
         }
+
+        btnImage.setOnClickListener {
+            val callImage = RetrofitInitializer().ImageAPI()
+                .searchPhotos(astroResponse.data.table.rows[0].entry.name)
+            processResponseImg(callImage)
+        }
+    }
+
+    private fun processResponseImg(call: Call<ImageResponseDTO>) {
+        call.enqueue(object : Callback<ImageResponseDTO?> {
+            override fun onResponse(
+                call: Call<ImageResponseDTO?>,
+                response: Response<ImageResponseDTO?>
+            ) {
+                response.body()?.let { res ->
+                    Glide.with(this@MainActivity)
+                        .load(res.photos[0].src.small)
+                        .into(img)
+                } ?: run {
+                    Log.e("Response Error", "Received null body in successful response")
+                }
+            }
+
+            override fun onFailure(call: Call<ImageResponseDTO?>, t: Throwable) {
+                TODO("Not yet implemented")
+            }
+
+
+        })
+
     }
 
     private fun processResponse(call: Call<AstronomyPositionResponseDTO>){

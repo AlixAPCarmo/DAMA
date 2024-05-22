@@ -25,6 +25,12 @@
         android:layout_height="wrap_content"
         android:text="Get Positions" />
 
+    <Button
+        android:id="@+id/getImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Get Positions" />
+
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="match_parent"
