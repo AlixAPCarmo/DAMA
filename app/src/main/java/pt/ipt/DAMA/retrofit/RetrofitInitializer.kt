@@ -6,6 +6,7 @@ import com.google.gson.GsonBuilder
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import pt.ipt.DAMA.retrofit.service.AstronomyAPI
+import pt.ipt.DAMA.retrofit.service.ImageAPI
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -38,7 +39,16 @@ class RetrofitInitializer {
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
 
+    //////////////////////////////////////////////////////////////////////////
+    private val host_ImageAPI = "https://api.pexels.com/v1/"
+    private val retrofitImage =
+        Retrofit.Builder()
+            .baseUrl(host_ImageAPI)
+            .addConverterFactory(GsonConverterFactory.create(gson))
+            .build()
+
     fun AstronomyAPI(): AstronomyAPI = retrofitAstronomy.create(AstronomyAPI::class.java)
+    fun ImageAPI(): ImageAPI = retrofitImage.create(ImageAPI::class.java)
 
     //função auxiliar para codificar string em base64
     private fun encodeStringToBase64(input: String): String {

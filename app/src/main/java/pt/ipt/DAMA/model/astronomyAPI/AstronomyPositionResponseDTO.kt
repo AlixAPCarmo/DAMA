@@ -1,4 +1,4 @@
-package pt.vapa.myfirstar.DTO.AstronomyAPI
+package pt.ipt.DAMA.model.astronomyAPI
 
 import com.google.gson.annotations.SerializedName
 

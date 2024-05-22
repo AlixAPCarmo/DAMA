@@ -1,6 +1,6 @@
 package pt.ipt.DAMA.retrofit.service
 
-import pt.vapa.myfirstar.DTO.AstronomyAPI.AstronomyPositionResponseDTO
+import pt.ipt.DAMA.model.astronomyAPI.AstronomyPositionResponseDTO
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.QueryMap
