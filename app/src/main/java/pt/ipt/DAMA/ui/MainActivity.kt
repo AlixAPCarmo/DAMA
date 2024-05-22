@@ -13,6 +13,7 @@ import pt.ipt.DAMA.hardware.GpsManager
 import pt.ipt.DAMA.model.astronomyAPI.AstronomyPositionResponseDTO
 import pt.ipt.DAMA.model.astronomyAPI.AstronomyRequestDTO
 import pt.ipt.DAMA.model.pexelsImageAPI.ImageResponseDTO
+import pt.ipt.DAMA.model.wikipédia.WikipediaResponseDTO
 import pt.ipt.DAMA.retrofit.RetrofitInitializer
 import retrofit2.Call
 import retrofit2.Callback
@@ -30,6 +31,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnpositions : Button
     private lateinit var img : ImageView
     private lateinit var btnImage : Button
+    private lateinit var txt2 : TextView
+    private lateinit var btnWiki : Button
     private lateinit var astroResponse : AstronomyPositionResponseDTO
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,6 +46,8 @@ class MainActivity : AppCompatActivity() {
         btnpositions = findViewById(R.id.getPositions)
         img = findViewById(R.id.imageView)
         btnImage = findViewById(R.id.getImage)
+        txt2 = findViewById(R.id.text2)
+        btnWiki = findViewById(R.id.getWiki)
 
         btnLocation.setOnClickListener {
             var currentLocation = gpsManager.getCurrentLocation()
@@ -83,6 +88,26 @@ class MainActivity : AppCompatActivity() {
                 .searchPhotos(astroResponse.data.table.rows[0].entry.name)
             processResponseImg(callImage)
         }
+
+        btnWiki.setOnClickListener {
+            val callWiki = RetrofitInitializer().WikiAPI().getSearch(astroResponse.data.table.rows[0].entry.name)
+            callWiki.enqueue(object : Callback<WikipediaResponseDTO?> {
+                override fun onResponse(
+                    call: Call<WikipediaResponseDTO?>,
+                    response: Response<WikipediaResponseDTO?>
+                ) {
+                    response.body()?.let { res ->
+                        txt2.text = res.query.pages[0].extract
+                    } ?: run {
+                        Log.e("Response Error", "Received null body in successful response")
+                    }
+                }
+                override fun onFailure(call: Call<WikipediaResponseDTO?>, t: Throwable) {
+                    TODO("Not yet implemented")
+                }
+            })
+        }
+
     }
 
     private fun processResponseImg(call: Call<ImageResponseDTO>) {

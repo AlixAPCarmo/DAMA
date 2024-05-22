@@ -7,6 +7,7 @@ import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import pt.ipt.DAMA.retrofit.service.AstronomyAPI
 import pt.ipt.DAMA.retrofit.service.ImageAPI
+import pt.ipt.DAMA.retrofit.service.WikipediaAPI
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -47,8 +48,18 @@ class RetrofitInitializer {
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
 
+    //////////////////////////////////////////////////////////////////////////
+    private val host_WikiAPI_en = "https://en.wikipedia.org/w/"
+    private val retrofitWiki_en =
+        Retrofit.Builder()
+            .baseUrl(host_WikiAPI_en)
+            .addConverterFactory(GsonConverterFactory.create(gson))
+            .build()
+
     fun AstronomyAPI(): AstronomyAPI = retrofitAstronomy.create(AstronomyAPI::class.java)
     fun ImageAPI(): ImageAPI = retrofitImage.create(ImageAPI::class.java)
+    fun WikiAPI(): WikipediaAPI  = retrofitWiki_en.create(WikipediaAPI::class.java)
+
 
     //função auxiliar para codificar string em base64
     private fun encodeStringToBase64(input: String): String {
