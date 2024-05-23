@@ -21,7 +21,7 @@ data class AstronomyPositionResponseDTO(
             data class Location(
                 @SerializedName("longitude") val longitude: Double,
                 @SerializedName("latitude") val latitude: Double,
-                @SerializedName("elevation") val elevation: Int
+                @SerializedName("elevation") val elevation: Double
             )
         }
 

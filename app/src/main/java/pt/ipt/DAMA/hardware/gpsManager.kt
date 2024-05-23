@@ -25,6 +25,7 @@ class GpsManager(private val context: Context) : LocationListener {
             // Permission already granted
             if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                 locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 5f, this)
+                currentLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
             } else {
                 Toast.makeText(context, "GPS is disabled", Toast.LENGTH_SHORT).show()
             }
