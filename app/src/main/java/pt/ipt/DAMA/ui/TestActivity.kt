@@ -26,7 +26,7 @@ import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 
-class MainActivity : AppCompatActivity() {
+class TestActivity : AppCompatActivity() {
     private lateinit var gpsManager: GpsManager
     private lateinit var cameraManager: CameraManager
     private lateinit var btnLocation: Button
@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_test)
         gpsManager = GpsManager(this)
         gpsManager.getLocation()
         cameraManager = CameraManager(this)
@@ -149,7 +149,7 @@ class MainActivity : AppCompatActivity() {
                 response: Response<ImageResponseDTO?>
             ) {
                 response.body()?.let { res ->
-                    Glide.with(this@MainActivity)
+                    Glide.with(this@TestActivity)
                         .load(res.photos[0].src.small)
                         .into(img)
                 } ?: run {
