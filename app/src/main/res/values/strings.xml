@@ -1,4 +1,15 @@
 <resources>
     <string name="app_name">DAMA</string>
-    <string name="hello_world">Hello, World!</string>
+    <string name="app_logo">App Logo</string>
+    <string name="welcome_message">Welcome to App Name.</string>
+    <string name="description_message">Discover Amazing Things Near Around You.</string>
+    <string name="sign_in">Sign In</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="skip">Skip</string>
+    <string name="sign_in_description">Sign in to discover amazing things near around you.</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="forgot_password">Forgot Password?</string>
+
+
 </resources>

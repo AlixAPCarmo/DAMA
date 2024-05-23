@@ -1,4 +1,4 @@
-package pt.ipt.DAMA.model
+package pt.ipt.DAMA.DTO
 
 // data class for Register activity
 data class UserRegister(

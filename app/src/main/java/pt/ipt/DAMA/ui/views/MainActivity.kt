@@ -1,4 +1,4 @@
-package pt.ipt.DAMA.ui
+package pt.ipt.DAMA.ui.views
 
 import android.Manifest
 import android.content.Intent
