@@ -3,6 +3,7 @@ package pt.ipt.DAMA.ui
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -10,6 +11,8 @@ import com.bumptech.glide.Glide
 import pt.ipt.DAMA.R
 import pt.ipt.DAMA.hardware.CameraManager
 import pt.ipt.DAMA.hardware.GpsManager
+import pt.ipt.DAMA.model.API.LoginRequestDTO
+import pt.ipt.DAMA.model.API.SimpleResponseDTO
 import pt.ipt.DAMA.model.astronomyAPI.AstronomyPositionResponseDTO
 import pt.ipt.DAMA.model.astronomyAPI.AstronomyRequestDTO
 import pt.ipt.DAMA.model.pexelsImageAPI.ImageResponseDTO
@@ -34,6 +37,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var txt2 : TextView
     private lateinit var btnWiki : Button
     private lateinit var astroResponse : AstronomyPositionResponseDTO
+    private lateinit var retrofit: RetrofitInitializer
+    private lateinit var btnlogin: Button
+    private lateinit var txtlogin: EditText
+    private lateinit var txtpassword: EditText
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,6 +55,10 @@ class MainActivity : AppCompatActivity() {
         btnImage = findViewById(R.id.getImage)
         txt2 = findViewById(R.id.text2)
         btnWiki = findViewById(R.id.getWiki)
+        retrofit = RetrofitInitializer(this)
+        btnlogin = findViewById(R.id.login)
+        txtlogin = findViewById(R.id.username)
+        txtpassword = findViewById(R.id.password)
 
         btnLocation.setOnClickListener {
             var currentLocation = gpsManager.getCurrentLocation()
@@ -73,7 +84,7 @@ class MainActivity : AppCompatActivity() {
                 )
             }
             val call = parameters?.let { it1 ->
-                RetrofitInitializer().AstronomyAPI().getBodyPositions(
+                retrofit.AstronomyAPI().getBodyPositions(
                     it1.toMap())
             }
             if (call != null) {
@@ -84,13 +95,13 @@ class MainActivity : AppCompatActivity() {
         }
 
         btnImage.setOnClickListener {
-            val callImage = RetrofitInitializer().ImageAPI()
+            val callImage = retrofit.ImageAPI()
                 .searchPhotos(astroResponse.data.table.rows[0].entry.name)
             processResponseImg(callImage)
         }
 
         btnWiki.setOnClickListener {
-            val callWiki = RetrofitInitializer().WikiAPI().getSearch(astroResponse.data.table.rows[0].entry.name)
+            val callWiki = retrofit.WikiAPI().getSearch(astroResponse.data.table.rows[0].entry.name)
             callWiki.enqueue(object : Callback<WikipediaResponseDTO?> {
                 override fun onResponse(
                     call: Call<WikipediaResponseDTO?>,
@@ -106,6 +117,27 @@ class MainActivity : AppCompatActivity() {
                     TODO("Not yet implemented")
                 }
             })
+        }
+
+        btnlogin.setOnClickListener {
+            val callLogin = retrofit.API().login(LoginRequestDTO(txtlogin.text.toString(), txtpassword.text.toString()))
+            callLogin.enqueue(object : Callback<SimpleResponseDTO?> {
+                override fun onResponse(
+                    call: Call<SimpleResponseDTO?>,
+                    response: Response<SimpleResponseDTO?>
+                ) {
+                    response.body()?.let { res ->
+                        txt.text = res.message
+                    } ?: run {
+                        Log.e("Response Error", "Received null body in successful response")
+                        Log.e("Response Error", response.message())
+                }
+            }
+                override fun onFailure(call: Call<SimpleResponseDTO?>, t: Throwable) {
+                    Log.e("onFailure error", t.message.toString())
+                }
+            })
+
         }
 
     }
@@ -176,5 +208,7 @@ class MainActivity : AppCompatActivity() {
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         return currentDate.format(formatter)
     }
+
+
 }
 

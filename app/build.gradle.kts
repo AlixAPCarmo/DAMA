@@ -49,6 +49,8 @@ dependencies {
     // Retrofit
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
+    implementation(libs.com.squareup.okhttp3.okhttp2)
+    implementation(libs.logging.interceptor)
     //Glide
     implementation(libs.glide)
     implementation(libs.compiler)
