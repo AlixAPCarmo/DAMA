@@ -13,12 +13,9 @@ import pt.ipt.DAMA.R
 
 class GpsManager(private val context: Context) : LocationListener {
 
-    private lateinit var locationManager: LocationManager
+    private var locationManager: LocationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
     private val locationPermissionCode = 2
-
-    init {
-        locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-    }
+    private var currentLocation: Location? = null
 
     fun getLocation() {
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -27,7 +24,8 @@ class GpsManager(private val context: Context) : LocationListener {
         } else {
             // Permission already granted
             if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 5f, this)
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 5f, this)
+                currentLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
             } else {
                 Toast.makeText(context, "GPS is disabled", Toast.LENGTH_SHORT).show()
             }
@@ -35,6 +33,11 @@ class GpsManager(private val context: Context) : LocationListener {
     }
 
     override fun onLocationChanged(location: Location) {
+        currentLocation = location
         Toast.makeText(context, "Latitude: ${location.latitude}, Longitude: ${location.longitude}", Toast.LENGTH_LONG).show()
+    }
+
+    fun getCurrentLocation(): Location? {
+        return currentLocation
     }
 }
