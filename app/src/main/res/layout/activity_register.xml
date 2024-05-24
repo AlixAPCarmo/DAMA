@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/midGrey"
-    tools:context=".ui.views.MainActivity">
+    tools:context=".ui.views.RegisterActivity">
 
     <!-- Purple Background on top with rounded bottom corners -->
     <View
@@ -14,7 +14,6 @@
         android:layout_height="300dp"
         android:background="@drawable/rounded_background" />
 
-    <!-- Back Button -->
     <ImageView
         android:id="@+id/back_button"
         android:layout_width="wrap_content"
@@ -26,8 +25,8 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         app:tint="@android:color/white" />
-    <!-- App Icon -->
 
+    <!-- App Icon -->
     <ImageView
         android:id="@+id/app_logo"
         android:layout_width="60dp"
@@ -37,9 +36,9 @@
         android:src="@drawable/ic_launcher_foreground"
         android:contentDescription="@string/app_logo" />
 
-    <!-- LinearLayout for Login Form -->
+    <!-- LinearLayout for Register Form -->
     <LinearLayout
-        android:id="@+id/login_form"
+        android:id="@+id/register_form"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/top_background"
@@ -59,21 +58,31 @@
             android:layout_marginTop="16dp"
             android:gravity="center"
             android:paddingHorizontal="24dp"
-            android:text="@string/sign_in"
+            android:text="@string/sign_up"
             android:textColor="@color/textColorPrimary"
             android:textSize="18sp" />
 
-        <!-- Description Message -->
-        <TextView
-            android:id="@+id/description_message"
-            android:layout_width="wrap_content"
+        <!-- First Name EditText -->
+        <EditText
+            android:id="@+id/first_name"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:gravity="center"
-            android:paddingHorizontal="24dp"
-            android:text="@string/sign_in_description"
-            android:textColor="@color/textColorSecondary"
-            android:textSize="14sp" />
+            android:layout_marginTop="16dp"
+            android:hint="@string/first_name"
+            android:inputType="textPersonName"
+            android:padding="12dp"
+            android:background="@drawable/edittext_background" />
+
+        <!-- Last Name EditText -->
+        <EditText
+            android:id="@+id/last_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="@string/last_name"
+            android:inputType="textPersonName"
+            android:padding="12dp"
+            android:background="@drawable/edittext_background" />
 
         <!-- Email EditText -->
         <EditText
@@ -97,37 +106,17 @@
             android:padding="12dp"
             android:background="@drawable/edittext_background" />
 
-        <!-- Sign In Button -->
+        <!-- Sign Up Button -->
         <Button
-            android:id="@+id/sign_in_button"
+            android:id="@+id/sign_up_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
             android:layout_marginTop="24dp"
             android:backgroundTint="@color/primaryColor"
             android:padding="16dp"
-            android:text="@string/sign_in"
+            android:text="@string/sign_up"
             android:textColor="@android:color/white" />
-
-        <!-- Forgot Password TextView -->
-        <TextView
-            android:id="@+id/forgot_password"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@string/forgot_password"
-            android:textColor="@color/primaryColor"
-            android:clickable="true"
-            android:focusable="true"
-            android:gravity="center" />
-
-        <!-- Or connect using divider -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="24dp"
-            android:background="@color/textColorSecondary" />
-
 
     </LinearLayout>
 

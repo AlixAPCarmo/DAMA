@@ -13,5 +13,7 @@ data class UserRegisterDTO(
     val firstName: String,
 
     @SerializedName("lastName")
-    val lastName: String
+    val lastName: String,
+
+    val role: String = "user"
 )

@@ -15,15 +15,15 @@ interface OurAPI {
     @POST("login")
     fun login(@Body credentials: LoginRequestDTO): Call<SimpleResponseDTO>
 
-    @POST("users/register")
+    @POST("register")
     fun registerUser(@Body userInfo: UserRegisterDTO): Call<SimpleResponseDTO>
 
-    @GET("users/logout")
+    @GET("logout")
     fun logoutUser(): Call<SimpleResponseDTO>
 
-    @PUT("users/update")
+    @PUT("update")
     fun updateUser(@Body updateInfo: UpdateUserDTO): Call<SimpleResponseDTO>
 
-    @POST("users/reset-password")
+    @POST("reset-password")
     fun resetPassword(@Body resetInfo: PasswordResetDTO): Call<SimpleResponseDTO>
 }

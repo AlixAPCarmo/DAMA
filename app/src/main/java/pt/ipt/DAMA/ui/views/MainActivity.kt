@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.widget.Button
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
@@ -60,6 +61,20 @@ class MainActivity : ComponentActivity() {
             // Initialize or start required functionality here
         } else {
             requestPermissions()
+        }
+
+        // Set up button click listeners
+        val signInButton: Button = findViewById(R.id.sign_in_button)
+        val signUpButton: Button = findViewById(R.id.sign_up_button)
+
+        signInButton.setOnClickListener {
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+        }
+
+        signUpButton.setOnClickListener {
+            val intent = Intent(this, RegisterActivity::class.java)
+            startActivity(intent)
         }
     }
 
