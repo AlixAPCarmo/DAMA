@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import pt.ipt.DAMA.R
@@ -23,7 +24,8 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var emailEditText: EditText
     private lateinit var passwordEditText: EditText
     private lateinit var signInButton: Button
-    private lateinit var backButton: Button
+    private lateinit var backButton: ImageView
+    private lateinit var skipButton: Button
 
     // Retrofit initializer
     private lateinit var retrofit: RetrofitInitializer
@@ -40,6 +42,7 @@ class LoginActivity : AppCompatActivity() {
         passwordEditText = findViewById(R.id.password)
         signInButton = findViewById(R.id.sign_in_button)
         backButton = findViewById(R.id.back_button)
+        skipButton = findViewById(R.id.skip)
 
         // Initialize the retrofit variable with context
         retrofit = RetrofitInitializer(this)
@@ -59,8 +62,19 @@ class LoginActivity : AppCompatActivity() {
             startActivity(intent)
             finish()
         }
+
+        // Set up skip button click listener
+        skipButton.setOnClickListener {
+            val intent = Intent(this, EmptyActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
+
     }
 
+    /*
+     * Function to login a user
+     */
     private fun loginUser(email: String, password: String) {
         // Create a Retrofit instance
         val callOurAPI = retrofit.API().login(LoginRequestDTO(email, password))

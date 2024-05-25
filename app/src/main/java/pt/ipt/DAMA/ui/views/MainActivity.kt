@@ -23,6 +23,10 @@ class MainActivity : ComponentActivity() {
     */
     private lateinit var gpsManager: GpsManager
     private lateinit var cameraManager: CameraManager
+    // UI components
+    private lateinit var signInButton: Button
+    private lateinit var signUpButton: Button
+    private lateinit var skipButton: Button
 
     /*
     * Activity result launcher for requesting multiple permissions
@@ -39,7 +43,6 @@ class MainActivity : ComponentActivity() {
             if (allPermissionsGranted) {
                 // All permissions are granted
                 Toast.makeText(this, "All permissions granted", Toast.LENGTH_SHORT).show()
-                // Initialize or start required functionality here
             } else {
                 // Some permissions are denied
                 showPermissionDeniedDialog()
@@ -58,22 +61,32 @@ class MainActivity : ComponentActivity() {
 
         if (allPermissionsGranted()) {
             // All permissions are already granted
-            // Initialize or start required functionality here
+            // display a toast message
+            Toast.makeText(this, "All permissions granted", Toast.LENGTH_SHORT).show()
         } else {
             requestPermissions()
         }
 
         // Set up button click listeners
-        val signInButton: Button = findViewById(R.id.sign_in_button)
-        val signUpButton: Button = findViewById(R.id.sign_up_button)
+        signInButton = findViewById(R.id.sign_in_button)
+        signUpButton = findViewById(R.id.sign_up_button)
+        skipButton = findViewById(R.id.skip)
 
+        // Set up sign in button click listener
         signInButton.setOnClickListener {
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
         }
 
+        // Set up sign up button click listener
         signUpButton.setOnClickListener {
             val intent = Intent(this, RegisterActivity::class.java)
+            startActivity(intent)
+        }
+
+        // Set up skip button click listener
+        skipButton.setOnClickListener {
+            val intent = Intent(this, EmptyActivity::class.java)
             startActivity(intent)
         }
     }
