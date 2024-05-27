@@ -24,6 +24,9 @@
         android:theme="@style/Theme.AppCompat"
         tools:targetApi="31">
         <activity
+            android:name=".ui.views.EmptyActivity"
+            android:theme="@style/Theme.AppCompat" />
+        <activity
             android:name=".ui.views.LoginActivity"
             android:theme="@style/Theme.AppCompat" />
         <activity

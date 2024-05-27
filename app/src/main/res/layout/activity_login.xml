@@ -110,13 +110,14 @@
             android:textColor="@android:color/white" />
 
         <!-- Forgot Password TextView -->
-        <TextView
+        <Button
             android:id="@+id/forgot_password"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="@string/forgot_password"
             android:textColor="@color/primaryColor"
+            android:background="@android:color/transparent"
             android:clickable="true"
             android:focusable="true"
             android:gravity="center" />
@@ -132,7 +133,7 @@
     </LinearLayout>
 
     <!-- Skip TextView -->
-    <TextView
+    <Button
         android:id="@+id/skip"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -141,6 +142,7 @@
         android:layout_marginBottom="24dp"
         android:text="@string/skip"
         android:textColor="@color/primaryColor"
+        android:background="@android:color/transparent"
         android:clickable="true"
         android:focusable="true" />
 
