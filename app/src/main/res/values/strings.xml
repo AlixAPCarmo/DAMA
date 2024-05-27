@@ -13,5 +13,8 @@
     <string name="first_name">First Name</string>
     <string name="last_name">Last Name</string>
     <string name="back_button">back</string>
+    <string name="positions_received">Positions received</string>
+    <string name="positions_error">Positions request error</string>
+
 
 </resources>
