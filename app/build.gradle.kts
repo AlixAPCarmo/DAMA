@@ -56,4 +56,6 @@ dependencies {
     implementation(libs.glide)
     implementation(libs.compiler)
 
+    implementation(libs.core)
+    implementation(libs.sceneform.ux)
 }

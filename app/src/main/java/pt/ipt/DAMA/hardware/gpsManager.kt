@@ -16,6 +16,7 @@ class GpsManager(private val context: Context) : LocationListener {
     private var locationManager: LocationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
     private val locationPermissionCode = 2
     private var currentLocation: Location? = null
+    private var inicialized = false
 
     fun getLocation() {
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -30,6 +31,7 @@ class GpsManager(private val context: Context) : LocationListener {
                 Toast.makeText(context, "GPS is disabled", Toast.LENGTH_SHORT).show()
             }
         }
+        inicialized = true
     }
 
     override fun onLocationChanged(location: Location) {
@@ -38,6 +40,9 @@ class GpsManager(private val context: Context) : LocationListener {
     }
 
     fun getCurrentLocation(): Location? {
+        if (!inicialized) {
+            getLocation()
+        }
         return currentLocation
     }
 }
