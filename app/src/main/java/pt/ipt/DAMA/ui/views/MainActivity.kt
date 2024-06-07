@@ -61,7 +61,7 @@ class MainActivity : ComponentActivity() {
         val cookieJar = MyCookieJar(this)
         if (cookieJar.isUserLoggedIn()) {
             // User is logged in, redirect to the main content
-            val intent = Intent(this, EmptyActivity::class.java)
+            val intent = Intent(this, ArActivity::class.java)
             startActivity(intent)
             finish()
             return

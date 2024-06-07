@@ -9,7 +9,6 @@ import android.location.LocationManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import pt.ipt.DAMA.R
 
 class GpsManager(private val context: Context) : LocationListener {
 

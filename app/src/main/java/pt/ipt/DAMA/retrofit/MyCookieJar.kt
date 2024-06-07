@@ -5,7 +5,6 @@ import android.util.Log
 import com.google.gson.Gson
 import okhttp3.Cookie
 import okhttp3.CookieJar
-import okhttp3.Headers
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import pt.ipt.DAMA.R

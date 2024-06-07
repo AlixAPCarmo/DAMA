@@ -6,14 +6,19 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.View
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.google.ar.sceneform.ux.ArFragment
+import com.google.gson.Gson
+import com.google.gson.JsonSyntaxException
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import pt.ipt.DAMA.R
 import pt.ipt.DAMA.hardware.GpsManager
+import pt.ipt.DAMA.model.API.SimpleResponseDTO
 import pt.ipt.DAMA.model.astronomyAPI.AstronomyPositionResponseDTO
 import pt.ipt.DAMA.model.astronomyAPI.AstronomyRequestDTO
 import pt.ipt.DAMA.retrofit.MyCookieJar
@@ -90,14 +95,14 @@ class ArActivity : AppCompatActivity() {
             }
         }
         btnList.setOnClickListener {
-            TODO("Intent to list activity")
+            val intent = Intent(this, ListActivity::class.java)
+            //intent.putExtra("listNames", positions.map { it.name }.toTypedArray())
+            startActivity(intent)
         }
 
         btnLogout.setOnClickListener {
             if (MyCookieJar(this).isUserLoggedIn()){
-                //TODO("Logout")
-                val intent = Intent(this, MainActivity::class.java)
-                startActivity(intent)
+                logoutUser()
             }else{
                 val intent = Intent(this, LoginActivity::class.java)
                 startActivity(intent)
@@ -170,6 +175,79 @@ class ArActivity : AppCompatActivity() {
             }
         }
 
+    }
+
+    private fun logoutUser() {
+        retrofit.API().logoutUser().enqueue(object : Callback<SimpleResponseDTO> {
+            override fun onResponse(
+                call: Call<SimpleResponseDTO>,
+                response: Response<SimpleResponseDTO>
+            ) {
+                if (response.isSuccessful) {
+                    val logoutResponse = response.body()
+                    if (logoutResponse != null && logoutResponse.ok) {
+                        // Clear cookies
+                        MyCookieJar(this@ArActivity).clearCookies(getString(R.string.ourAPI).toHttpUrlOrNull()!!)
+
+                        Toast.makeText(
+                            this@ArActivity,
+                            "Logged out successfully",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        val intent = Intent(this@ArActivity, MainActivity::class.java)
+                        startActivity(intent)
+                    } else {
+                        Toast.makeText(
+                            this@ArActivity,
+                            logoutResponse?.error ?: "Unknown error",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                } else {
+                    handleErrorResponse(response)
+                }
+            }
+
+            override fun onFailure(call: Call<SimpleResponseDTO>, t: Throwable) {
+                Log.e("EmptyActivity", "Network Failure: ${t.message}")
+                Toast.makeText(
+                    this@ArActivity,
+                    "Network error: ${t.message}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        })
+    }
+
+    private fun handleErrorResponse(response: Response<SimpleResponseDTO>) {
+        val errorBody = response.errorBody()?.string()
+        if (errorBody != null) {
+            try {
+                val gson = Gson()
+                val errorResponse: SimpleResponseDTO =
+                    gson.fromJson(errorBody, SimpleResponseDTO::class.java)
+                Toast.makeText(
+                    this@ArActivity,
+                    errorResponse.error ?: "Unknown error",
+                    Toast.LENGTH_SHORT
+                ).show()
+            } catch (e: JsonSyntaxException) {
+                Toast.makeText(
+                    this@ArActivity,
+                    "Error parsing response: $errorBody",
+                    Toast.LENGTH_SHORT
+                ).show()
+            } catch (e: IllegalStateException) {
+                // Handle case where response is not a JSON object
+                Toast.makeText(
+                    this@ArActivity,
+                    "Unexpected response format: $errorBody",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        } else {
+            Toast.makeText(this@ArActivity, "Unknown error", Toast.LENGTH_SHORT).show()
+        }
     }
 }
 
