@@ -25,7 +25,10 @@ class RetrofitInitializer(context: Context) {
 
     val authInterceptorAstronomy = Interceptor { chain ->
         val newRequest = chain.request().newBuilder()
-            .addHeader("Authorization", "Basic "+encodeStringToBase64("$aplicationId:$aplicationSecret"))
+            .addHeader(
+                "Authorization",
+                "Basic " + encodeStringToBase64("$aplicationId:$aplicationSecret")
+            )
             .build()
         chain.proceed(newRequest)
     }
@@ -61,22 +64,23 @@ class RetrofitInitializer(context: Context) {
 
     //////////////////////////////////////////////////////////////////////////
     private val host_API = context.getString(R.string.ourAPI)
-    val myCookieJar = MyCookieJar(context)
+    private val myCookieJar = MyCookieJar(context)
 
     val client = OkHttpClient.Builder()
         .cookieJar(myCookieJar)
         .build()
 
-    private val retrofitAPI =
-        Retrofit.Builder()
-            .baseUrl(host_API)
-            .client(client)
-            .addConverterFactory(GsonConverterFactory.create(gson))
-            .build()
+    private val retrofitAPI = Retrofit.Builder()
+        .baseUrl(host_API)
+        .client(client)
+        .addConverterFactory(GsonConverterFactory.create(Gson()))
+        .build()
+
+
+    fun API(): OurAPI = retrofitAPI.create(OurAPI::class.java)
     fun AstronomyAPI(): AstronomyAPI = retrofitAstronomy.create(AstronomyAPI::class.java)
     fun ImageAPI(): ImageAPI = retrofitImage.create(ImageAPI::class.java)
-    fun WikiAPI(): WikipediaAPI  = retrofitWiki_en.create(WikipediaAPI::class.java)
-    fun API(): OurAPI = retrofitAPI.create(OurAPI::class.java)
+    fun WikiAPI(): WikipediaAPI = retrofitWiki_en.create(WikipediaAPI::class.java)
 
 
     //função auxiliar para codificar string em base64

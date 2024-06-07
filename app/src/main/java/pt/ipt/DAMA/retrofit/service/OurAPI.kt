@@ -18,7 +18,7 @@ interface OurAPI {
     @POST("register")
     fun registerUser(@Body userInfo: UserRegisterDTO): Call<SimpleResponseDTO>
 
-    @GET("logout")
+    @POST("logout")
     fun logoutUser(): Call<SimpleResponseDTO>
 
     @PUT("update")

@@ -17,6 +17,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
+import pt.ipt.DAMA.retrofit.MyCookieJar
 
 class LoginActivity : AppCompatActivity() {
 
@@ -30,9 +31,6 @@ class LoginActivity : AppCompatActivity() {
     // Retrofit initializer
     private lateinit var retrofit: RetrofitInitializer
 
-    /*
-     * Initializes the activity
-     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
@@ -69,74 +67,54 @@ class LoginActivity : AppCompatActivity() {
             startActivity(intent)
             finish()
         }
-
     }
 
-    /*
-     * Function to login a user
-     */
     private fun loginUser(email: String, password: String) {
-        // Create a Retrofit instance
         val callOurAPI = retrofit.API().login(LoginRequestDTO(email, password))
 
-        // Make the network request
         callOurAPI.enqueue(object : Callback<SimpleResponseDTO> {
-            override fun onResponse(
-                call: Call<SimpleResponseDTO>,
-                response: Response<SimpleResponseDTO>
-            ) {
+            override fun onResponse(call: Call<SimpleResponseDTO>, response: Response<SimpleResponseDTO>) {
                 if (response.isSuccessful) {
                     val loginResponse = response.body()
-                    Log.d("LoginActivity", "Response: ${response.body()}")
                     if (loginResponse != null && loginResponse.ok) {
-                        Toast.makeText(
-                            this@LoginActivity,
-                            loginResponse.message,
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        // Handle successful login
+                        // Verify cookies saved
+                        val cookieJar = retrofit.client.cookieJar as MyCookieJar
+                        Log.d("LoginActivity", "Cookies after login: ${cookieJar.cookies}")
+
+                        Toast.makeText(this@LoginActivity, loginResponse.message, Toast.LENGTH_SHORT).show()
                         val intent = Intent(this@LoginActivity, EmptyActivity::class.java)
                         startActivity(intent)
                         finish()
                     } else {
-                        Toast.makeText(
-                            this@LoginActivity,
-                            loginResponse?.error ?: "Unknown error",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        Toast.makeText(this@LoginActivity, loginResponse?.error ?: "Unknown error", Toast.LENGTH_SHORT).show()
                     }
                 } else {
-                    val errorBody = response.errorBody()?.string()
-                    Log.e("LoginActivity", "Error Response: $errorBody")
-                    if (errorBody != null) {
-                        try {
-                            val gson = Gson()
-                            val loginResponse: SimpleResponseDTO =
-                                gson.fromJson(errorBody, SimpleResponseDTO::class.java)
-                            Toast.makeText(
-                                this@LoginActivity,
-                                loginResponse.error ?: "Unknown error",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        } catch (e: JsonSyntaxException) {
-                            // Handle the case where the error body is a plain string
-                            Toast.makeText(this@LoginActivity, errorBody, Toast.LENGTH_SHORT).show()
-                        }
-                    } else {
-                        Toast.makeText(this@LoginActivity, "Unknown error", Toast.LENGTH_SHORT)
-                            .show()
-                    }
+                    handleErrorResponse(response)
                 }
             }
 
             override fun onFailure(call: Call<SimpleResponseDTO>, t: Throwable) {
                 Log.e("LoginActivity", "Network Failure: ${t.message}")
-                Toast.makeText(
-                    this@LoginActivity,
-                    "Network error: ${t.message}",
-                    Toast.LENGTH_SHORT
-                ).show()
+                Toast.makeText(this@LoginActivity, "Network error: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
+    }
+
+    private fun handleErrorResponse(response: Response<SimpleResponseDTO>) {
+        val errorBody = response.errorBody()?.string()
+        if (errorBody != null) {
+            try {
+                val gson = Gson()
+                val errorResponse: SimpleResponseDTO = gson.fromJson(errorBody, SimpleResponseDTO::class.java)
+                Toast.makeText(this@LoginActivity, errorResponse.error ?: "Unknown error", Toast.LENGTH_SHORT).show()
+            } catch (e: JsonSyntaxException) {
+                Toast.makeText(this@LoginActivity, "Error parsing response: $errorBody", Toast.LENGTH_SHORT).show()
+            } catch (e: IllegalStateException) {
+                // Handle case where response is not a JSON object
+                Toast.makeText(this@LoginActivity, "Unexpected response format: $errorBody", Toast.LENGTH_SHORT).show()
+            }
+        } else {
+            Toast.makeText(this@LoginActivity, "Unknown error", Toast.LENGTH_SHORT).show()
+        }
     }
 }
