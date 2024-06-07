@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import pt.ipt.DAMA.R
 import pt.ipt.DAMA.model.API.SimpleResponseDTO
 import pt.ipt.DAMA.retrofit.MyCookieJar
@@ -50,17 +51,15 @@ class EmptyActivity : AppCompatActivity() {
                     val logoutResponse = response.body()
                     if (logoutResponse != null && logoutResponse.ok) {
                         // Clear cookies
-                        val cookieJar = MyCookieJar(this@EmptyActivity)
-                        cookieJar.clearCookies()
+                        MyCookieJar(this@EmptyActivity).clearCookies(getString(R.string.ourAPI).toHttpUrlOrNull()!!)
 
                         Toast.makeText(
                             this@EmptyActivity,
                             "Logged out successfully",
                             Toast.LENGTH_SHORT
                         ).show()
-                        val intent = Intent(this@EmptyActivity, MainActivity::class.java)
+                        val intent = Intent(this@EmptyActivity, ArActivity::class.java)
                         startActivity(intent)
-                        finish()
                     } else {
                         Toast.makeText(
                             this@EmptyActivity,

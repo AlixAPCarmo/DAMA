@@ -82,7 +82,7 @@ class LoginActivity : AppCompatActivity() {
                         Log.d("LoginActivity", "Cookies after login: ${cookieJar.cookies}")
 
                         Toast.makeText(this@LoginActivity, loginResponse.message, Toast.LENGTH_SHORT).show()
-                        val intent = Intent(this@LoginActivity, EmptyActivity::class.java)
+                        val intent = Intent(this@LoginActivity, ArActivity::class.java)
                         startActivity(intent)
                         finish()
                     } else {
