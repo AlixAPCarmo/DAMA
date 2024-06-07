@@ -1,6 +1,7 @@
 package pt.ipt.DAMA.retrofit.service
 
 import pt.ipt.DAMA.model.API.LoginRequestDTO
+import pt.ipt.DAMA.model.API.LogoutResponseDTO
 import pt.ipt.DAMA.model.API.PasswordResetDTO
 import pt.ipt.DAMA.model.API.SimpleResponseDTO
 import pt.ipt.DAMA.model.API.UpdateUserDTO
@@ -18,8 +19,8 @@ interface OurAPI {
     @POST("register")
     fun registerUser(@Body userInfo: UserRegisterDTO): Call<SimpleResponseDTO>
 
-    @GET("logout")
     fun logoutUser(): Call<SimpleResponseDTO>
+    @POST("logout")
 
     @PUT("update")
     fun updateUser(@Body updateInfo: UpdateUserDTO): Call<SimpleResponseDTO>

@@ -1,24 +1,28 @@
 package pt.ipt.DAMA.ui.views
 
-import android.Manifest
+import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
+import android.view.View
+import android.widget.ImageButton
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import com.google.ar.sceneform.ux.ArFragment
 import pt.ipt.DAMA.R
 import pt.ipt.DAMA.hardware.GpsManager
+import pt.ipt.DAMA.model.API.LogoutResponseDTO
+import pt.ipt.DAMA.model.API.SimpleResponseDTO
 import pt.ipt.DAMA.model.astronomyAPI.AstronomyPositionResponseDTO
 import pt.ipt.DAMA.model.astronomyAPI.AstronomyRequestDTO
+import pt.ipt.DAMA.retrofit.MyCookieJar
 import pt.ipt.DAMA.retrofit.RetrofitInitializer
 import pt.ipt.DAMA.utils.ArUtils
 import pt.ipt.DAMA.utils.DateAndTime
+import pt.ipt.DAMA.utils.PermissionsManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -29,11 +33,15 @@ import kotlin.math.sin
 class ArActivity : AppCompatActivity() {
     private lateinit var gpsManager: GpsManager
     private lateinit var arUtils: ArUtils
-
+    private lateinit var permissionManager: PermissionsManager
     private lateinit var retrofit: RetrofitInitializer
     private var positions: List<PositionData> = emptyList()
+
     private lateinit var arFragment: ArFragment
-    private val cameraPermissionCode = 101
+    private lateinit var btnRefresh: ImageButton
+    private lateinit var btnList: ImageButton
+    private lateinit var btnLogout: ImageButton
+
     private val handler = Handler(Looper.getMainLooper())
     private val arScale = 4.0
 
@@ -42,8 +50,21 @@ class ArActivity : AppCompatActivity() {
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         setContentView(R.layout.activity_ar)
 
+        // Initialize permission manager
+        permissionManager = PermissionsManager(this, registerForActivityResult(
+            ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+            permissionManager.handlePermissionsResult(permissions)
+        })
+
+        if (!permissionManager.allPermissionsGranted()) {
+            permissionManager.requestPermissions()
+        }
+
         // Inicializar componentes de visualização
         arFragment = supportFragmentManager.findFragmentById(R.id.fragment) as ArFragment
+        btnRefresh = findViewById(R.id.refreshButton)
+        btnList = findViewById(R.id.listButton)
+        btnLogout = findViewById(R.id.logoutButton)
 
         // Inicializar variáveis
         gpsManager = GpsManager(this)
@@ -51,20 +72,41 @@ class ArActivity : AppCompatActivity() {
         retrofit = RetrofitInitializer(this)
         arUtils = ArUtils(this, arFragment)
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), cameraPermissionCode)
-        } else {
-            requestPositions()
+        if (!MyCookieJar(this).isUserLoggedIn()){
+            Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show()
+            btnList.visibility = View.GONE
+            btnLogout.setImageResource(R.drawable.login_icon)
         }
-    }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == cameraPermissionCode && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(this, "Camera permission is granted", Toast.LENGTH_LONG).show()
-        } else {
-            Toast.makeText(this, "Camera permission is needed to run this application", Toast.LENGTH_LONG).show()
+        //define actions for buttons
+        btnRefresh.setOnClickListener {
+            arUtils.removeAllNodes()
+            requestPositions()
+            if (!MyCookieJar(this).isUserLoggedIn()){
+                Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show()
+                btnList.visibility = View.GONE
+                btnLogout.setImageResource(R.drawable.login_icon)
+            }else{
+                btnList.visibility = View.VISIBLE
+                btnLogout.setImageResource(R.drawable.logout_icon)
+            }
         }
+        btnList.setOnClickListener {
+            TODO("Intent to list activity")
+        }
+
+        btnLogout.setOnClickListener {
+            if (MyCookieJar(this).isUserLoggedIn()){
+                //TODO("Logout")
+                val intent = Intent(this, MainActivity::class.java)
+                startActivity(intent)
+            }else{
+                val intent = Intent(this, LoginActivity::class.java)
+                startActivity(intent)
+            }
+
+        }
+        requestPositions()
     }
 
     private fun requestPositions() {
