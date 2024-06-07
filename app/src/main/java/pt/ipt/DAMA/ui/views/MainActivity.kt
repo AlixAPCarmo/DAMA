@@ -16,6 +16,7 @@ import androidx.core.content.ContextCompat
 import pt.ipt.DAMA.R
 import pt.ipt.DAMA.hardware.CameraManager
 import pt.ipt.DAMA.hardware.GpsManager
+import pt.ipt.DAMA.retrofit.MyCookieJar
 
 class MainActivity : ComponentActivity() {
     /*
@@ -55,6 +56,16 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        // Check if user is already logged in
+        val cookieJar = MyCookieJar(this)
+        if (cookieJar.isUserLoggedIn()) {
+            // User is logged in, redirect to the main content
+            val intent = Intent(this, EmptyActivity::class.java)
+            startActivity(intent)
+            finish()
+            return
+        }
 
         gpsManager = GpsManager(this)
         cameraManager = CameraManager(this)
