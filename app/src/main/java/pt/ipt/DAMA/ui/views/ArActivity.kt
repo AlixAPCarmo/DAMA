@@ -14,8 +14,6 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.ar.sceneform.ux.ArFragment
 import pt.ipt.DAMA.R
 import pt.ipt.DAMA.hardware.GpsManager
-import pt.ipt.DAMA.model.API.LogoutResponseDTO
-import pt.ipt.DAMA.model.API.SimpleResponseDTO
 import pt.ipt.DAMA.model.astronomyAPI.AstronomyPositionResponseDTO
 import pt.ipt.DAMA.model.astronomyAPI.AstronomyRequestDTO
 import pt.ipt.DAMA.retrofit.MyCookieJar

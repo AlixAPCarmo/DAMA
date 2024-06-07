@@ -37,8 +37,12 @@ class MyCookieJar(private val context: Context) : CookieJar {
     }
 
     fun isUserLoggedIn(): Boolean {
-        val baseUrlString = context.getString(R.string.ourAPI)
-        val url = HttpUrl.Builder().host(baseUrlString).build()
+        val baseUrlString = context.getString(R.string.ourAPI).split("://")[1].split("/")[0]
+        val url = HttpUrl.Builder()
+            .host(baseUrlString)
+            .scheme("https")
+            .addPathSegment("api")
+            .build()
         val cookies = loadForRequest(url)
         return cookies.any { cookie ->
             cookie.name == "session_id" && !cookie.hasExpired()

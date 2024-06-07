@@ -1,7 +1,6 @@
 package pt.ipt.DAMA.retrofit.service
 
 import pt.ipt.DAMA.model.API.LoginRequestDTO
-import pt.ipt.DAMA.model.API.LogoutResponseDTO
 import pt.ipt.DAMA.model.API.PasswordResetDTO
 import pt.ipt.DAMA.model.API.SimpleResponseDTO
 import pt.ipt.DAMA.model.API.UpdateUserDTO
