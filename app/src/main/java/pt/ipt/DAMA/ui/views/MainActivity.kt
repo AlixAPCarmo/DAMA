@@ -8,6 +8,7 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
@@ -28,6 +29,7 @@ class MainActivity : ComponentActivity() {
     private lateinit var signInButton: Button
     private lateinit var signUpButton: Button
     private lateinit var skipButton: Button
+    private lateinit var aboutButton: ImageButton
 
     /*
     * Activity result launcher for requesting multiple permissions
@@ -82,6 +84,7 @@ class MainActivity : ComponentActivity() {
         signInButton = findViewById(R.id.sign_in_button)
         signUpButton = findViewById(R.id.sign_up_button)
         skipButton = findViewById(R.id.skip)
+        aboutButton = findViewById(R.id.about_button)
 
         // Set up sign in button click listener
         signInButton.setOnClickListener {
@@ -98,6 +101,11 @@ class MainActivity : ComponentActivity() {
         // Set up skip button click listener
         skipButton.setOnClickListener {
             val intent = Intent(this, ArActivity::class.java)
+            startActivity(intent)
+        }
+
+        aboutButton.setOnClickListener {
+            val intent = Intent(this, AboutUsActivity::class.java)
             startActivity(intent)
         }
     }

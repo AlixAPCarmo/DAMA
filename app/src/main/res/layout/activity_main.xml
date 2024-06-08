@@ -102,4 +102,19 @@
         android:clickable="true"
         android:focusable="true" />
 
+    <ImageButton
+        android:id="@+id/about_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="10dp"
+        android:layout_marginTop="10dp"
+        android:src="@drawable/about_icon"
+        android:background="@android:color/transparent"
+        android:contentDescription="about us button"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"/>
+
+
+
+
 </RelativeLayout>

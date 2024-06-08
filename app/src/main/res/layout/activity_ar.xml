@@ -29,21 +29,32 @@
             android:src="@drawable/refresh_icon"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/listButton"
+            app:layout_constraintBottom_toTopOf="@id/aboutButton"
             style="@style/imgButtonAR" />
+
+        <ImageButton
+            android:id="@+id/aboutButton"
+            android:layout_height="40dp"
+            android:layout_width="40dp"
+            android:contentDescription="About Us"
+            android:src="@drawable/about_icon"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/refreshButton"
+            app:layout_constraintBottom_toTopOf="@id/listButton"
+            style="@style/imgButtonAR"/>
 
         <ImageButton
             android:id="@+id/listButton"
             android:contentDescription="List"
             android:src="@drawable/list_icon"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/refreshButton"
+            app:layout_constraintTop_toBottomOf="@id/aboutButton"
             app:layout_constraintBottom_toTopOf="@id/logoutButton"
             style="@style/imgButtonAR"/>
 
         <ImageButton
             android:id="@+id/logoutButton"
-            android:contentDescription="List"
+            android:contentDescription="Logout"
             android:src="@drawable/logout_icon"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/listButton"

@@ -44,6 +44,7 @@ class ArActivity : AppCompatActivity() {
     private lateinit var btnRefresh: ImageButton
     private lateinit var btnList: ImageButton
     private lateinit var btnLogout: ImageButton
+    private lateinit var btnAbout: ImageButton
 
     private val handler = Handler(Looper.getMainLooper())
     private val arScale = 4.0
@@ -68,6 +69,7 @@ class ArActivity : AppCompatActivity() {
         btnRefresh = findViewById(R.id.refreshButton)
         btnList = findViewById(R.id.listButton)
         btnLogout = findViewById(R.id.logoutButton)
+        btnAbout = findViewById(R.id.aboutButton)
 
         // Inicializar variáveis
         gpsManager = GpsManager(this)
@@ -109,6 +111,12 @@ class ArActivity : AppCompatActivity() {
             }
 
         }
+
+        btnAbout.setOnClickListener {
+            val intent = Intent(this, AboutUsActivity::class.java)
+            startActivity(intent)
+        }
+
         requestPositions()
     }
 
