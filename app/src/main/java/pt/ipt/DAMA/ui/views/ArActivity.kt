@@ -209,7 +209,7 @@ class ArActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<SimpleResponseDTO>, t: Throwable) {
-                Log.e("EmptyActivity", "Network Failure: ${t.message}")
+                Log.e("CelestialActivity", "Network Failure: ${t.message}")
                 Toast.makeText(
                     this@ArActivity,
                     "Network error: ${t.message}",

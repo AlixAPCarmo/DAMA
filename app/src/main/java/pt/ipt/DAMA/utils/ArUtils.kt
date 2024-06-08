@@ -3,25 +3,15 @@ package pt.ipt.DAMA.utils
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.hardware.camera2.CameraAccessException
-import android.hardware.camera2.CameraCharacteristics
-import android.hardware.camera2.CameraManager
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import com.google.ar.core.Anchor
 import com.google.ar.core.ArCoreApk
-import com.google.ar.core.Config
-import com.google.ar.core.HitResult
-import com.google.ar.core.Pose
-import com.google.ar.core.Session
-import com.google.ar.core.exceptions.CameraNotAvailableException
-import com.google.ar.core.exceptions.UnavailableException
 import com.google.ar.sceneform.AnchorNode
 import com.google.ar.sceneform.Node
 import com.google.ar.sceneform.math.Quaternion
@@ -33,7 +23,7 @@ import com.google.ar.sceneform.rendering.ViewRenderable
 import com.google.ar.sceneform.ux.ArFragment
 import com.google.ar.sceneform.ux.TransformableNode
 import pt.ipt.DAMA.R
-import pt.ipt.DAMA.ui.views.EmptyActivity
+import pt.ipt.DAMA.ui.views.CelestialActivity
 
 class ArUtils(
     private val context: Context,
@@ -141,7 +131,7 @@ class ArUtils(
                     this.setOnTapListener { _,_ ->
                         Log.d("Debug", "Button was clicked")
                         Toast.makeText(context, "Button clicked", Toast.LENGTH_SHORT).show()
-                        val intent = Intent(context, EmptyActivity::class.java)
+                        val intent = Intent(context, CelestialActivity::class.java)
                         context.startActivity(intent)
                         TODO("Abrir ecrã de detalhes do planeta")
                     }

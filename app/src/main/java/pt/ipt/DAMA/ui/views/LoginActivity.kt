@@ -63,7 +63,7 @@ class LoginActivity : AppCompatActivity() {
 
         // Set up skip button click listener
         skipButton.setOnClickListener {
-            val intent = Intent(this, EmptyActivity::class.java)
+            val intent = Intent(this, CelestialActivity::class.java)
             startActivity(intent)
             finish()
         }

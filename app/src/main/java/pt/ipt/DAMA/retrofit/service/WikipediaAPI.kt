@@ -10,12 +10,14 @@ interface WikipediaAPI {
     fun getSearch(
         @Query("titles") titles: String,
         @Query("action") action: String = "query",
-        @Query("prop") prop: String = "extracts",
+        @Query("prop") prop: String = "extracts|pageimages",
         @Query("exsentences") exsentences: Int = 10,
         @Query("exlimit") exlimit: Int = 1,
         @Query("explaintext") explaintext: Int = 1,
+        @Query("piprop") piprop: String = "original",
+        @Query("pithumbsize") pithumbsize: Int = 500,
+        @Query("pilimit") pilimit: Int = 10,
         @Query("formatversion") formatversion: Int = 2,
         @Query("format") format: String = "json"
     ): Call<WikipediaResponseDTO>
-
 }
