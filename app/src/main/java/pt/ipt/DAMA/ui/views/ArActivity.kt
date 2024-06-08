@@ -96,7 +96,6 @@ class ArActivity : AppCompatActivity() {
         }
         btnList.setOnClickListener {
             val intent = Intent(this, ListActivity::class.java)
-            //intent.putExtra("listNames", positions.map { it.name }.toTypedArray())
             startActivity(intent)
         }
 

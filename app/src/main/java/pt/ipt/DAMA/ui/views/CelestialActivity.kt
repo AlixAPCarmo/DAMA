@@ -38,6 +38,8 @@ class CelestialActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_celestial)
 
+        val name = intent.getStringExtra("name")
+
         // Initialize Retrofit and APIs
         val retrofitInitializer = RetrofitInitializer(this)
         api = retrofitInitializer.API()
@@ -62,8 +64,9 @@ class CelestialActivity : AppCompatActivity() {
         }
 
         // Call Wikipedia API
-        val searchQuery = "Saturn"
-        getWikipediaContent(searchQuery)
+        if (name != null) {
+            getWikipediaContent(name)
+        }
     }
 
     private fun getWikipediaContent(query: String) {

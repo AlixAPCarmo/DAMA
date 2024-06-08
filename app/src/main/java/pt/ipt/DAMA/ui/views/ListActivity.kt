@@ -104,8 +104,8 @@ class ListActivity: AppCompatActivity() {
                             query,
                             data.photos[0].src.medium
                         ){
-                            val intent = Intent(this@ListActivity, MainActivity::class.java)
-                            intent.putExtra("planet", query)
+                            val intent = Intent(this@ListActivity, CelestialActivity::class.java)
+                            intent.putExtra("name", query)
                             startActivity(intent)
                         }
                         if(count >= size){

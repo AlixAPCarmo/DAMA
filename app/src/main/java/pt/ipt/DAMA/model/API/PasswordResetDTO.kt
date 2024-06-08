@@ -4,5 +4,7 @@ import com.google.gson.annotations.SerializedName
 
 data class PasswordResetDTO(
     @SerializedName("newPassword")
-    val newPassword: String
+    val newPassword: String,
+    @SerializedName("email")
+    val email: String
 )
