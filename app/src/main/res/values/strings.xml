@@ -1,7 +1,7 @@
 <resources>
-    <string name="app_name">DAMA</string>
+    <string name="app_name">SkyMapper</string>
     <string name="app_logo">App Logo</string>
-    <string name="welcome_message">Welcome to App Name.</string>
+    <string name="welcome_message">Welcome to SkyMapper.</string>
     <string name="description_message">Discover Amazing Things Near Around You.</string>
     <string name="sign_in">Sign In</string>
     <string name="sign_up">Sign Up</string>

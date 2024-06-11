@@ -1,6 +1,8 @@
 package pt.ipt.DAMA.ui.views
 
+import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
@@ -24,8 +26,10 @@ class EmptyActivity : AppCompatActivity() {
     private lateinit var retrofit: RetrofitInitializer
     private lateinit var api: OurAPI
 
+    @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         setContentView(R.layout.empty_activity)
 
         // Initialize Retrofit and API

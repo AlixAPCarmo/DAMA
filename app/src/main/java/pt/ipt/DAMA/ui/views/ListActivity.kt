@@ -1,6 +1,8 @@
 package pt.ipt.DAMA.ui.views
 
+import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -19,6 +21,7 @@ import pt.ipt.DAMA.model.API.SimpleResponseDTO
 import pt.ipt.DAMA.model.astronomyAPI.AstronomyPositionResponseDTO
 import pt.ipt.DAMA.model.astronomyAPI.AstronomyRequestDTO
 import pt.ipt.DAMA.model.pexelsImageAPI.ImageResponseDTO
+import pt.ipt.DAMA.model.wikipédia.WikipediaResponseDTO
 import pt.ipt.DAMA.retrofit.MyCookieJar
 import pt.ipt.DAMA.retrofit.RetrofitInitializer
 import pt.ipt.DAMA.ui.adapter.ItemList
@@ -40,8 +43,10 @@ class ListActivity: AppCompatActivity() {
     private lateinit var btnAR: Button
     private lateinit var btnLogout: Button
 
+    @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         setContentView(R.layout.activity_list)
 
         recyclerView = findViewById(R.id.recyclerView)
@@ -80,7 +85,7 @@ class ListActivity: AppCompatActivity() {
                         var count = 0
                         res.data.table.rows.forEach {
                             count++
-                            loadDataImage(it.entry.name, size, count)
+                            loadDataImage(it.entry.name, count >= size)
                             Thread.sleep(100)
                         }
 
@@ -94,30 +99,52 @@ class ListActivity: AppCompatActivity() {
             })
         }
     }
-    private fun loadDataImage(query: String, size: Int, count: Int){
-        retrofit.ImageAPI().searchPhotos("planet $query").enqueue(object : Callback<ImageResponseDTO> {
-            override fun onResponse(call: Call<ImageResponseDTO>, response: Response<ImageResponseDTO>) {
+
+    private fun loadDataImage(query: String, end: Boolean){
+        retrofit.WikiAPI().getSearch(titles = query).enqueue(object : Callback<WikipediaResponseDTO> {
+            override fun onResponse(
+                call: Call<WikipediaResponseDTO>,
+                response: Response<WikipediaResponseDTO>
+            ) {
                 if (response.isSuccessful) {
-                    val data = response.body()
-                    if (data != null) {
+                    val wikiResponse = response.body()
+                    if (wikiResponse != null && wikiResponse.query.pages.isNotEmpty()) {
+                        val page = wikiResponse.query.pages[0]
                         listItens += ItemList(
                             query,
-                            data.photos[0].src.medium
+                            (page.thumbnail?.source ?: page.original?.source).toString()
                         ){
                             val intent = Intent(this@ListActivity, MainActivity::class.java)
                             intent.putExtra("planet", query)
                             startActivity(intent)
                         }
-                        if(count >= size){
+                        if(end){
                             adapter = ListAdapter(listItens.toList(), this@ListActivity)
                             recyclerView.adapter = adapter
                         }
+                    } else {
+                        Toast.makeText(
+                            this@ListActivity,
+                            "No content found",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
+                } else {
+                    Toast.makeText(
+                        this@ListActivity,
+                        "Error: ${response.message()}",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
 
-            override fun onFailure(call: Call<ImageResponseDTO>, t: Throwable) {
-                t.printStackTrace()
+            override fun onFailure(call: Call<WikipediaResponseDTO>, t: Throwable) {
+                Log.e("CelestialActivity", "Network Failure: ${t.message}")
+                Toast.makeText(
+                    this@ListActivity,
+                    "Network error: ${t.message}",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         })
     }

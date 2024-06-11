@@ -51,6 +51,9 @@ class PermissionsManager(
         }
     }
 
+    /*
+    * function to show permission denied dialog
+     */
     private fun showPermissionDeniedDialog() {
         AlertDialog.Builder(context)
             .setTitle("Permissions Required")

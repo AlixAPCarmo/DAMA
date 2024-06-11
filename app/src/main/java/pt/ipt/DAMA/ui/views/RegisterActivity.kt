@@ -2,11 +2,13 @@ package pt.ipt.DAMA.ui.views
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import pt.ipt.DAMA.model.API.SimpleResponseDTO
@@ -26,13 +28,14 @@ class RegisterActivity : AppCompatActivity() {
     private lateinit var emailEditText: EditText
     private lateinit var passwordEditText: EditText
     private lateinit var signUpButton: Button
-    private lateinit var skipButton: Button
+    private lateinit var skipButton: TextView
     private lateinit var backButton: ImageView
     private lateinit var retrofit: RetrofitInitializer
 
-    @SuppressLint("MissingInflatedId")
+    @SuppressLint("MissingInflatedId", "SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         setContentView(R.layout.activity_register)
 
         // Initialize UI components

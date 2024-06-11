@@ -1,5 +1,6 @@
 package pt.ipt.DAMA.ui.views
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
@@ -49,9 +50,10 @@ class ArActivity : AppCompatActivity() {
     private val handler = Handler(Looper.getMainLooper())
     private val arScale = 4.0
 
+    @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         setContentView(R.layout.activity_ar)
 
         // Initialize permission manager

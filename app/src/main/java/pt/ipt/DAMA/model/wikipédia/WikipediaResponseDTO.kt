@@ -15,5 +15,13 @@ data class WikiPage(
     @SerializedName("pageid") val pageId: Int,
     @SerializedName("ns") val ns: Int,
     @SerializedName("title") val title: String,
-    @SerializedName("extract") val extract: String
+    @SerializedName("extract") val extract: String,
+    @SerializedName("thumbnail") val thumbnail: WikiImage?,
+    @SerializedName("original") val original: WikiImage?
+)
+
+data class WikiImage(
+    @SerializedName("source") val source: String,
+    @SerializedName("width") val width: Int,
+    @SerializedName("height") val height: Int
 )
