@@ -67,7 +67,7 @@ class LoginActivity : AppCompatActivity() {
 
         // Set up skip button click listener
         skipButton.setOnClickListener {
-            val intent = Intent(this, EmptyActivity::class.java)
+            val intent = Intent(this, ArActivity::class.java)
             startActivity(intent)
             finish()
         }
@@ -90,7 +90,7 @@ class LoginActivity : AppCompatActivity() {
                         startActivity(intent)
                         finish()
                     } else {
-                        Toast.makeText(this@LoginActivity, loginResponse?.error ?: "Unknown error", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@LoginActivity, loginResponse?.error ?: getString(R.string.unknown_error), Toast.LENGTH_SHORT).show()
                     }
                 } else {
                     handleErrorResponse(response)
@@ -99,7 +99,7 @@ class LoginActivity : AppCompatActivity() {
 
             override fun onFailure(call: Call<SimpleResponseDTO>, t: Throwable) {
                 Log.e("LoginActivity", "Network Failure: ${t.message}")
-                Toast.makeText(this@LoginActivity, "Network error: ${t.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@LoginActivity, getString(R.string.network_error)+": ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
     }
@@ -110,15 +110,15 @@ class LoginActivity : AppCompatActivity() {
             try {
                 val gson = Gson()
                 val errorResponse: SimpleResponseDTO = gson.fromJson(errorBody, SimpleResponseDTO::class.java)
-                Toast.makeText(this@LoginActivity, errorResponse.error ?: "Unknown error", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@LoginActivity, errorResponse.error ?: getString(R.string.unknown_error), Toast.LENGTH_SHORT).show()
             } catch (e: JsonSyntaxException) {
-                Toast.makeText(this@LoginActivity, "Error parsing response: $errorBody", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@LoginActivity, getString(R.string.error_parsing_response)+": $errorBody", Toast.LENGTH_SHORT).show()
             } catch (e: IllegalStateException) {
                 // Handle case where response is not a JSON object
-                Toast.makeText(this@LoginActivity, "Unexpected response format: $errorBody", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@LoginActivity, getString(R.string.unexpected_response_format)+": $errorBody", Toast.LENGTH_SHORT).show()
             }
         } else {
-            Toast.makeText(this@LoginActivity, "Unknown error", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this@LoginActivity, getString(R.string.unknown_error), Toast.LENGTH_SHORT).show()
         }
     }
 }

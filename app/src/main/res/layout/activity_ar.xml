@@ -25,7 +25,7 @@
 
         <ImageButton
             android:id="@+id/refreshButton"
-            android:contentDescription="Refresh"
+            android:contentDescription="@string/refresh"
             android:src="@drawable/refresh_icon"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -36,7 +36,7 @@
             android:id="@+id/aboutButton"
             android:layout_height="40dp"
             android:layout_width="40dp"
-            android:contentDescription="About Us"
+            android:contentDescription="@string/about_us"
             android:src="@drawable/about_icon"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/refreshButton"
@@ -45,7 +45,7 @@
 
         <ImageButton
             android:id="@+id/listButton"
-            android:contentDescription="List"
+            android:contentDescription="@string/list"
             android:src="@drawable/list_icon"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/aboutButton"
@@ -54,7 +54,7 @@
 
         <ImageButton
             android:id="@+id/logoutButton"
-            android:contentDescription="Logout"
+            android:contentDescription="@string/logout"
             android:src="@drawable/logout_icon"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/listButton"

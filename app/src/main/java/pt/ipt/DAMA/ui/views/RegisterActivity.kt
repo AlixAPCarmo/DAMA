@@ -63,14 +63,14 @@ class RegisterActivity : AppCompatActivity() {
 
         // Set up back button click listener
         backButton.setOnClickListener {
-            val intent = Intent(this, LoginActivity::class.java)
+            val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
             finish()
         }
 
         // Set up skip button click listener
         skipButton.setOnClickListener {
-            val intent = Intent(this, EmptyActivity::class.java)
+            val intent = Intent(this, ArActivity::class.java)
             startActivity(intent)
             finish()
         }
@@ -109,7 +109,7 @@ class RegisterActivity : AppCompatActivity() {
                     } else {
                         Toast.makeText(
                             this@RegisterActivity,
-                            registerResponse?.error ?: "Unknown error",
+                            registerResponse?.error ?: getString(R.string.unknown_error),
                             Toast.LENGTH_SHORT
                         ).show()
                     }
@@ -123,7 +123,7 @@ class RegisterActivity : AppCompatActivity() {
                                 gson.fromJson(errorBody, SimpleResponseDTO::class.java)
                             Toast.makeText(
                                 this@RegisterActivity,
-                                registerResponse.error ?: "Unknown error",
+                                registerResponse.error ?:getString(R.string.unknown_error),
                                 Toast.LENGTH_SHORT
                             ).show()
                         } catch (e: JsonSyntaxException) {
@@ -132,7 +132,7 @@ class RegisterActivity : AppCompatActivity() {
                                 .show()
                         }
                     } else {
-                        Toast.makeText(this@RegisterActivity, "Unknown error", Toast.LENGTH_SHORT)
+                        Toast.makeText(this@RegisterActivity, getString(R.string.unknown_error), Toast.LENGTH_SHORT)
                             .show()
                     }
                 }
@@ -142,7 +142,7 @@ class RegisterActivity : AppCompatActivity() {
                 Log.e("RegisterActivity", "Network Failure: ${t.message}")
                 Toast.makeText(
                     this@RegisterActivity,
-                    "Network error: ${t.message}",
+                    getString(R.string.network_error) +": ${t.message}",
                     Toast.LENGTH_SHORT
                 ).show()
             }

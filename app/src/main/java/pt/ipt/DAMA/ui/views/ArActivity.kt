@@ -80,7 +80,7 @@ class ArActivity : AppCompatActivity() {
         arUtils = ArUtils(this, arFragment)
 
         if (!MyCookieJar(this).isUserLoggedIn()){
-            Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.user_not_logged_in), Toast.LENGTH_SHORT).show()
             btnList.visibility = View.GONE
             btnLogout.setImageResource(R.drawable.login_icon)
         }
@@ -90,7 +90,7 @@ class ArActivity : AppCompatActivity() {
             arUtils.removeAllNodes()
             requestPositions()
             if (!MyCookieJar(this).isUserLoggedIn()){
-                Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.user_not_logged_in), Toast.LENGTH_SHORT).show()
                 btnList.visibility = View.GONE
                 btnLogout.setImageResource(R.drawable.login_icon)
             }else{
@@ -100,7 +100,6 @@ class ArActivity : AppCompatActivity() {
         }
         btnList.setOnClickListener {
             val intent = Intent(this, ListActivity::class.java)
-            //intent.putExtra("listNames", positions.map { it.name }.toTypedArray())
             startActivity(intent)
         }
 
@@ -201,7 +200,7 @@ class ArActivity : AppCompatActivity() {
 
                         Toast.makeText(
                             this@ArActivity,
-                            "Logged out successfully",
+                            getString(R.string.logged_out_successfully),
                             Toast.LENGTH_SHORT
                         ).show()
                         val intent = Intent(this@ArActivity, MainActivity::class.java)
@@ -209,7 +208,7 @@ class ArActivity : AppCompatActivity() {
                     } else {
                         Toast.makeText(
                             this@ArActivity,
-                            logoutResponse?.error ?: "Unknown error",
+                            logoutResponse?.error ?: getString(R.string.unknown_error),
                             Toast.LENGTH_SHORT
                         ).show()
                     }
@@ -219,10 +218,9 @@ class ArActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<SimpleResponseDTO>, t: Throwable) {
-                Log.e("EmptyActivity", "Network Failure: ${t.message}")
                 Toast.makeText(
                     this@ArActivity,
-                    "Network error: ${t.message}",
+                    getString(R.string.network_error)+": ${t.message}",
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -238,25 +236,25 @@ class ArActivity : AppCompatActivity() {
                     gson.fromJson(errorBody, SimpleResponseDTO::class.java)
                 Toast.makeText(
                     this@ArActivity,
-                    errorResponse.error ?: "Unknown error",
+                    errorResponse.error ?: getString(R.string.unknown_error),
                     Toast.LENGTH_SHORT
                 ).show()
             } catch (e: JsonSyntaxException) {
                 Toast.makeText(
                     this@ArActivity,
-                    "Error parsing response: $errorBody",
+                    getString(R.string.error_parsing_response)+": $errorBody",
                     Toast.LENGTH_SHORT
                 ).show()
             } catch (e: IllegalStateException) {
                 // Handle case where response is not a JSON object
                 Toast.makeText(
                     this@ArActivity,
-                    "Unexpected response format: $errorBody",
+                    getString(R.string.unexpected_response_format)+": $errorBody",
                     Toast.LENGTH_SHORT
                 ).show()
             }
         } else {
-            Toast.makeText(this@ArActivity, "Unknown error", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this@ArActivity, getString(R.string.unknown_error), Toast.LENGTH_SHORT).show()
         }
     }
 }

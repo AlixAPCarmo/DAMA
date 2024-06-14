@@ -117,6 +117,7 @@ class ListActivity: AppCompatActivity() {
                             val intent = Intent(this@ListActivity, MainActivity::class.java)
                             intent.putExtra("planet", query)
                             startActivity(intent)
+                            TODO("Alterar para a pagina de more info")
                         }
                         if(end){
                             adapter = ListAdapter(listItens.toList(), this@ListActivity)
@@ -125,24 +126,23 @@ class ListActivity: AppCompatActivity() {
                     } else {
                         Toast.makeText(
                             this@ListActivity,
-                            "No content found",
+                            getString(R.string.no_content_found),
                             Toast.LENGTH_SHORT
                         ).show()
                     }
                 } else {
                     Toast.makeText(
                         this@ListActivity,
-                        "Error: ${response.message()}",
+                        getString(R.string.error)+": ${response.message()}",
                         Toast.LENGTH_SHORT
                     ).show()
                 }
             }
 
             override fun onFailure(call: Call<WikipediaResponseDTO>, t: Throwable) {
-                Log.e("CelestialActivity", "Network Failure: ${t.message}")
                 Toast.makeText(
                     this@ListActivity,
-                    "Network error: ${t.message}",
+                    getString(R.string.network_error)+": ${t.message}",
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -163,7 +163,7 @@ class ListActivity: AppCompatActivity() {
 
                         Toast.makeText(
                             this@ListActivity,
-                            "Logged out successfully",
+                            getString(R.string.logged_out_successfully),
                             Toast.LENGTH_SHORT
                         ).show()
                         val intent = Intent(this@ListActivity, MainActivity::class.java)
@@ -171,7 +171,7 @@ class ListActivity: AppCompatActivity() {
                     } else {
                         Toast.makeText(
                             this@ListActivity,
-                            logoutResponse?.error ?: "Unknown error",
+                            logoutResponse?.error ?: getString(R.string.unknown_error),
                             Toast.LENGTH_SHORT
                         ).show()
                     }
@@ -181,10 +181,9 @@ class ListActivity: AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<SimpleResponseDTO>, t: Throwable) {
-                Log.e("EmptyActivity", "Network Failure: ${t.message}")
                 Toast.makeText(
                     this@ListActivity,
-                    "Network error: ${t.message}",
+                    getString(R.string.network_error)+": ${t.message}",
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -200,25 +199,25 @@ class ListActivity: AppCompatActivity() {
                     gson.fromJson(errorBody, SimpleResponseDTO::class.java)
                 Toast.makeText(
                     this@ListActivity,
-                    errorResponse.error ?: "Unknown error",
+                    errorResponse.error ?: getString(R.string.unknown_error),
                     Toast.LENGTH_SHORT
                 ).show()
             } catch (e: JsonSyntaxException) {
                 Toast.makeText(
                     this@ListActivity,
-                    "Error parsing response: $errorBody",
+                    getString(R.string.error_parsing_response)+": $errorBody",
                     Toast.LENGTH_SHORT
                 ).show()
             } catch (e: IllegalStateException) {
                 // Handle case where response is not a JSON object
                 Toast.makeText(
                     this@ListActivity,
-                    "Unexpected response format: $errorBody",
+                    getString(R.string.unexpected_response_format)+": $errorBody",
                     Toast.LENGTH_SHORT
                 ).show()
             }
         } else {
-            Toast.makeText(this@ListActivity, "Unknown error", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this@ListActivity, getString(R.string.unknown_error), Toast.LENGTH_SHORT).show()
         }
     }
 }

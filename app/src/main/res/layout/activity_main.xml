@@ -110,7 +110,7 @@
         android:layout_marginTop="10dp"
         android:src="@drawable/about_icon"
         android:background="@android:color/transparent"
-        android:contentDescription="about us button"
+        android:contentDescription="@string/about_us_button"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"/>
 

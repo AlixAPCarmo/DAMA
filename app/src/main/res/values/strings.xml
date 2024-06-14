@@ -15,6 +15,25 @@
     <string name="back_button">back</string>
     <string name="positions_received">Positions received</string>
     <string name="positions_error">Positions request error</string>
+    <string name="user_not_logged_in">User not logged in</string>
+    <string name="logged_out_successfully">Logged out successfully</string>
+    <string name="unknown_error">Unknown error</string>
+    <string name="network_error">Network error</string>
+    <string name="error_parsing_response">Error parsing response</string>
+    <string name="unexpected_response_format">Unexpected response format</string>
+    <string name="no_content_found">No content found</string>
+    <string name="error">Error</string>
+    <string name="ipt_logo">IPT Logo</string>
+    <string name="refresh">Refresh</string>
+    <string name="about_us">About Us</string>
+    <string name="list">List</string>
+    <string name="logout">Logout</string>
+    <string name="astronomical_objects_list">Astronomical Objects List</string>
+    <string name="ar_view">AR View</string>
+    <string name="about_us_button">about us button</string>
+    <string name="informacao">Info</string>
+    <string name="title">Title</string>
+    <string name="more_info">More info +</string>
 
 
 </resources>

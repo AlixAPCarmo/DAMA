@@ -24,7 +24,7 @@
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="60dp"
-            android:contentDescription="IPT Logo"
+            android:contentDescription="@string/ipt_logo"
             android:src="@drawable/ipt_logo"/>
 
         <!-- Back Button -->
