@@ -1,9 +1,10 @@
 package pt.ipt.DAMA.model.astronomyAPI
 
 import com.google.gson.annotations.SerializedName
-import java.sql.Time
-import java.util.Date
 
+/**
+ * Data class to represent an astronomy request
+ */
 data class AstronomyRequestDTO(
     @SerializedName("latitude") var latitude : Double,
     @SerializedName("longitude") var longitude : Double,

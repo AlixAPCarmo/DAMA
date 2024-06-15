@@ -76,19 +76,16 @@ class RegisterActivity : AppCompatActivity() {
         }
     }
 
-    /*
-    * Function to register a user
+    /**
+     * Function to register a user
      */
     private fun registerUser(firstName: String, lastName: String, email: String, password: String) {
-        // Create a Retrofit instance
+        // Make the API request for user registration
         val callOurAPI =
             retrofit.API().registerUser(UserRegisterDTO(email, password, firstName, lastName))
 
-        // Make the network request
+        // Handle the response from the API
         callOurAPI.enqueue(object : Callback<SimpleResponseDTO> {
-            /*
-            * Handle the response from the server
-             */
             override fun onResponse(
                 call: Call<SimpleResponseDTO>,
                 response: Response<SimpleResponseDTO>
@@ -105,7 +102,6 @@ class RegisterActivity : AppCompatActivity() {
                         // navigate to the login activity
                         val intent = Intent(this@RegisterActivity, LoginActivity::class.java)
                         startActivity(intent)
-                        finish()
                     } else {
                         Toast.makeText(
                             this@RegisterActivity,

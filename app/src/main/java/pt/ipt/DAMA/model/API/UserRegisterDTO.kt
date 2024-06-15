@@ -2,6 +2,9 @@ package pt.ipt.DAMA.model.API
 
 import com.google.gson.annotations.SerializedName
 
+/**
+ * Data class to represent a user registration request
+ */
 data class UserRegisterDTO(
     @SerializedName("email")
     val email: String,

@@ -2,6 +2,9 @@ package pt.ipt.DAMA.model.astronomyAPI
 
 import com.google.gson.annotations.SerializedName
 
+/**
+ * Data class to represent an astronomy position response
+ */
 data class AstronomyPositionResponseDTO(
     @SerializedName("data") val data: Data
 ){

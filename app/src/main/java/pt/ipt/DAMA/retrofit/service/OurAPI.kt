@@ -7,10 +7,12 @@ import pt.ipt.DAMA.model.API.UpdateUserDTO
 import pt.ipt.DAMA.model.API.UserRegisterDTO
 import retrofit2.Call
 import retrofit2.http.Body
-import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.PUT
 
+/**
+ * Interface to represent the API
+ */
 interface OurAPI {
     @POST("login")
     fun login(@Body credentials: LoginRequestDTO): Call<SimpleResponseDTO>

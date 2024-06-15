@@ -3,11 +3,9 @@ package pt.ipt.DAMA.ui.views
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.ActivityInfo
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.View
 import android.widget.ImageButton
 import android.widget.Toast
@@ -35,6 +33,7 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 class ArActivity : AppCompatActivity() {
+    // Declare necessary variables and components
     private lateinit var gpsManager: GpsManager
     private lateinit var arUtils: ArUtils
     private lateinit var permissionManager: PermissionsManager
@@ -48,7 +47,7 @@ class ArActivity : AppCompatActivity() {
     private lateinit var btnAbout: ImageButton
 
     private val handler = Handler(Looper.getMainLooper())
-    private val arScale = 4.0
+    private val arScale = 4.0 // Scale factor for positioning AR objects
 
     @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,26 +65,27 @@ class ArActivity : AppCompatActivity() {
             permissionManager.requestPermissions()
         }
 
-        // Inicializar componentes de visualização
+        // Inicializar UI componentes
         arFragment = supportFragmentManager.findFragmentById(R.id.fragment) as ArFragment
         btnRefresh = findViewById(R.id.refreshButton)
         btnList = findViewById(R.id.listButton)
         btnLogout = findViewById(R.id.logoutButton)
         btnAbout = findViewById(R.id.aboutButton)
 
-        // Inicializar variáveis
+        // Inicializar services
         gpsManager = GpsManager(this)
         gpsManager.getLocation()
         retrofit = RetrofitInitializer(this)
         arUtils = ArUtils(this, arFragment)
 
+        // Login checks and UI updates based on login status
         if (!MyCookieJar(this).isUserLoggedIn()){
             Toast.makeText(this, getString(R.string.user_not_logged_in), Toast.LENGTH_SHORT).show()
             btnList.visibility = View.GONE
             btnLogout.setImageResource(R.drawable.login_icon)
         }
 
-        //define actions for buttons
+        // Button actions setup
         btnRefresh.setOnClickListener {
             arUtils.removeAllNodes()
             requestPositions()
@@ -121,6 +121,9 @@ class ArActivity : AppCompatActivity() {
         requestPositions()
     }
 
+    /**
+     * Function to request the positions of celestial bodies from the Astronomy API
+     */
     private fun requestPositions() {
         val pos = gpsManager.getCurrentLocation()
         if (pos != null) {
@@ -150,6 +153,9 @@ class ArActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Function to transform the data received from the Astronomy API into AR positions
+     */
     private fun transformData(positions: List<AstronomyPositionResponseDTO.Data.Table.Row>) {
         fun degreesToRadians(degrees: Double): Double {
             return degrees * (PI / 180.0)
@@ -170,6 +176,9 @@ class ArActivity : AppCompatActivity() {
         positionNodes()
     }
 
+    /**
+     * Function to position the AR nodes in the scene
+     */
     private fun positionNodes(){
         if (positions.isEmpty() && !arUtils.checkARCoreAvailability(this)){
             handler.postDelayed({positionNodes()} , 1000)
@@ -186,6 +195,9 @@ class ArActivity : AppCompatActivity() {
 
     }
 
+    /**
+     * Function to logout the user from the application
+     */
     private fun logoutUser() {
         retrofit.API().logoutUser().enqueue(object : Callback<SimpleResponseDTO> {
             override fun onResponse(
@@ -227,6 +239,9 @@ class ArActivity : AppCompatActivity() {
         })
     }
 
+    /**
+     * Function to handle error responses from the API
+     */
     private fun handleErrorResponse(response: Response<SimpleResponseDTO>) {
         val errorBody = response.errorBody()?.string()
         if (errorBody != null) {
@@ -259,6 +274,9 @@ class ArActivity : AppCompatActivity() {
     }
 }
 
+/**
+ * Data class to represent the position of a celestial body in AR
+ */
 data class PositionData(
     val name: String,
     val x: Float,

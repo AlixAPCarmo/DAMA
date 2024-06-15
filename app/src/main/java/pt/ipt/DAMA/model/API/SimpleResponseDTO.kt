@@ -2,6 +2,9 @@ package pt.ipt.DAMA.model.API
 
 import com.google.gson.annotations.SerializedName
 
+/**
+ * Data class to represent a simple response from the API
+ */
 data class SimpleResponseDTO(
     @SerializedName("ok")
     val ok: Boolean,

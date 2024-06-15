@@ -4,9 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.util.Log
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -20,7 +17,6 @@ import pt.ipt.DAMA.hardware.GpsManager
 import pt.ipt.DAMA.model.API.SimpleResponseDTO
 import pt.ipt.DAMA.model.astronomyAPI.AstronomyPositionResponseDTO
 import pt.ipt.DAMA.model.astronomyAPI.AstronomyRequestDTO
-import pt.ipt.DAMA.model.pexelsImageAPI.ImageResponseDTO
 import pt.ipt.DAMA.model.wikipédia.WikipediaResponseDTO
 import pt.ipt.DAMA.retrofit.MyCookieJar
 import pt.ipt.DAMA.retrofit.RetrofitInitializer
@@ -49,16 +45,21 @@ class ListActivity: AppCompatActivity() {
         this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         setContentView(R.layout.activity_list)
 
+        // Setup RecyclerView with a LinearLayoutManager
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
+
+        // Initialize Retrofit and GpsManager
         retrofit = RetrofitInitializer(this)
         gpsManager = GpsManager(this)
 
+        // Setup AR button to navigate to the AR Activity
         btnAR = findViewById(R.id.arButton)
         btnAR.setOnClickListener {
             val intent = Intent(this, ArActivity::class.java)
             startActivity(intent)
         }
+        // Setup Logout button to logout the user
         btnLogout = findViewById(R.id.logoutButton)
         btnLogout.setOnClickListener {
             logoutUser()
@@ -66,6 +67,9 @@ class ListActivity: AppCompatActivity() {
         loadDataName()
     }
 
+    /**
+     * Load data for celestial objects from the Astronomy API
+     */
     private fun loadDataName(){
         val pos = gpsManager.getCurrentLocation()
         if (pos != null) {
@@ -83,6 +87,7 @@ class ListActivity: AppCompatActivity() {
                     response.body()?.let { res ->
                         val size = res.data.table.rows.size
                         var count = 0
+                        // Load data from the Astronomy API
                         res.data.table.rows.forEach {
                             count++
                             loadDataImage(it.entry.name, count >= size)
@@ -100,6 +105,9 @@ class ListActivity: AppCompatActivity() {
         }
     }
 
+    /**
+     * Load images for each item using the Wikipedia API
+     */
     private fun loadDataImage(query: String, end: Boolean){
         retrofit.WikiAPI().getSearch(titles = query).enqueue(object : Callback<WikipediaResponseDTO> {
             override fun onResponse(
@@ -110,6 +118,7 @@ class ListActivity: AppCompatActivity() {
                     val wikiResponse = response.body()
                     if (wikiResponse != null && wikiResponse.query.pages.isNotEmpty()) {
                         val page = wikiResponse.query.pages[0]
+                        // Add item to the list
                         listItens += ItemList(
                             query,
                             (page.thumbnail?.source ?: page.original?.source).toString()
@@ -119,6 +128,7 @@ class ListActivity: AppCompatActivity() {
                             startActivity(intent)
                             TODO("Alterar para a pagina de more info")
                         }
+                        // Update RecyclerView when all items are loaded
                         if(end){
                             adapter = ListAdapter(listItens.toList(), this@ListActivity)
                             recyclerView.adapter = adapter
@@ -149,6 +159,9 @@ class ListActivity: AppCompatActivity() {
         })
     }
 
+    /**
+     * Logout the user
+     */
     private fun logoutUser() {
         retrofit.API().logoutUser().enqueue(object : Callback<SimpleResponseDTO> {
             override fun onResponse(
@@ -190,6 +203,9 @@ class ListActivity: AppCompatActivity() {
         })
     }
 
+    /**
+     * Function to handle error responses from the API
+     */
     private fun handleErrorResponse(response: Response<SimpleResponseDTO>) {
         val errorBody = response.errorBody()?.string()
         if (errorBody != null) {

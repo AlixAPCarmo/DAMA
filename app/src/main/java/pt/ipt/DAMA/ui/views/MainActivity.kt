@@ -1,33 +1,22 @@
 package pt.ipt.DAMA.ui.views
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.ActivityInfo
-import android.content.pm.PackageManager
-import android.net.Uri
-import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
 import android.widget.Button
 import android.widget.ImageButton
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AlertDialog
-import androidx.core.content.ContextCompat
 import pt.ipt.DAMA.R
-import pt.ipt.DAMA.hardware.CameraManager
 import pt.ipt.DAMA.hardware.GpsManager
 import pt.ipt.DAMA.retrofit.MyCookieJar
 import pt.ipt.DAMA.utils.PermissionsManager
 
 class MainActivity : ComponentActivity() {
-    /*
-    * Managers for hardware components
-    */
+
+    //Managers for hardware components
     private lateinit var gpsManager: GpsManager
-    private lateinit var cameraManager: CameraManager
     // UI components
     private lateinit var signInButton: Button
     private lateinit var signUpButton: Button
@@ -35,9 +24,6 @@ class MainActivity : ComponentActivity() {
     private lateinit var aboutButton: ImageButton
     private lateinit var permissionManager: PermissionsManager
 
-    /*
-    * Initializes the activity
-    */
     @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,15 +33,14 @@ class MainActivity : ComponentActivity() {
         // Check if user is already logged in
         val cookieJar = MyCookieJar(this)
         if (cookieJar.isUserLoggedIn()) {
-            // User is logged in, redirect to the main content
+            // User is logged in, redirect to the ArActivity
             val intent = Intent(this, ArActivity::class.java)
             startActivity(intent)
-            finish()
-            return
         }
 
+        // Initialize hardware managers
         gpsManager = GpsManager(this)
-        cameraManager = CameraManager(this)
+
 
         // Initialize permission manager
         permissionManager = PermissionsManager(this, registerForActivityResult(
@@ -91,6 +76,7 @@ class MainActivity : ComponentActivity() {
             startActivity(intent)
         }
 
+        // Set up about button click listener
         aboutButton.setOnClickListener {
             val intent = Intent(this, AboutUsActivity::class.java)
             startActivity(intent)

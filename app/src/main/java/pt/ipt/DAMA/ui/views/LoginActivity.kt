@@ -46,7 +46,7 @@ class LoginActivity : AppCompatActivity() {
         backButton = findViewById(R.id.back_button)
         skipButton = findViewById(R.id.skip)
 
-        // Initialize the retrofit variable with context
+        // Initialize the retrofit for APIs interactions
         retrofit = RetrofitInitializer(this)
 
         // Set up sign-in button click listener
@@ -62,7 +62,6 @@ class LoginActivity : AppCompatActivity() {
         backButton.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
-            finish()
         }
 
         // Set up skip button click listener
@@ -73,6 +72,9 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Login User
+     */
     private fun loginUser(email: String, password: String) {
         val callOurAPI = retrofit.API().login(LoginRequestDTO(email, password))
 
@@ -104,6 +106,9 @@ class LoginActivity : AppCompatActivity() {
         })
     }
 
+    /**
+     * Function to handle error responses from the API
+     */
     private fun handleErrorResponse(response: Response<SimpleResponseDTO>) {
         val errorBody = response.errorBody()?.string()
         if (errorBody != null) {
