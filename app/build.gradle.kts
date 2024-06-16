@@ -1,11 +1,25 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
 }
 
+// Read local.properties
+val localProperties = Properties()
+localProperties.load(FileInputStream(rootProject.file("local.properties")))
+
+// Get the API key
+val googleAiApiKey: String = localProperties.getProperty("googleAiApiKey")
+
 android {
     namespace = "pt.ipt.DAMA"
     compileSdk = 34
+
+    buildFeatures {
+        buildConfig = true
+    }
 
     defaultConfig {
         applicationId = "pt.ipt.DAMA"
@@ -13,6 +27,7 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
+        buildConfigField("String", "GOOGLE_AI_API_KEY", "\"$googleAiApiKey\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -55,6 +70,10 @@ dependencies {
     //Glide
     implementation(libs.glide)
     implementation(libs.compiler)
+
+    // google ai
+    implementation(libs.googleAi)
+    implementation(libs.couroutines)
 
     implementation(libs.core)
     implementation(libs.sceneform.ux)

@@ -12,16 +12,21 @@ import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import pt.ipt.DAMA.R
+import pt.ipt.DAMA.model.API.ChatGptMessage
+import pt.ipt.DAMA.model.API.ChatGptRequest
+import pt.ipt.DAMA.model.API.ChatGptResponse
 import pt.ipt.DAMA.model.API.SimpleResponseDTO
 import pt.ipt.DAMA.model.wikipédia.WikipediaResponseDTO
 import pt.ipt.DAMA.retrofit.MyCookieJar
 import pt.ipt.DAMA.retrofit.RetrofitInitializer
+import pt.ipt.DAMA.retrofit.service.OpenAiApiService
 import pt.ipt.DAMA.retrofit.service.OurAPI
 import pt.ipt.DAMA.retrofit.service.WikipediaAPI
 import pt.ipt.DAMA.ui.adapter.ImageCarouselAdapter
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.util.Locale
 
 class CelestialActivity : AppCompatActivity() {
 
@@ -33,17 +38,24 @@ class CelestialActivity : AppCompatActivity() {
     private lateinit var imageCarousel: ViewPager2
     private lateinit var imageCarouselAdapter: ImageCarouselAdapter
     private lateinit var backButton: ImageButton
+    private lateinit var openAI: OpenAiApiService
+    private lateinit var name: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_celestial)
 
-        val name = intent.getStringExtra("name")
+        name = intent.getStringExtra("name").toString()
+
+        // get the system language
+        val systemLanguage = Locale.getDefault().language
+        Log.e("CelestialActivity", "System Language: $systemLanguage")
 
         // Initialize Retrofit and APIs
         val retrofitInitializer = RetrofitInitializer(this)
         api = retrofitInitializer.API()
         wikipediaAPI = retrofitInitializer.WikiAPI()
+        openAI = retrofitInitializer.OpenAiAPI()
 
         // Initialize UI components
         logoutButton = findViewById(R.id.logout_button)
@@ -63,13 +75,122 @@ class CelestialActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        // Call Wikipedia API
-        if (name != null) {
-            getWikipediaContent(name)
+        // Translate the celestial object name to English
+        translateName(name)
+    }
+
+    private fun translateName(name: String) {
+        val messages = listOf(
+            ChatGptMessage(
+                role = "user",
+                content = "Translate the following celestial object name to English. Return only the name in English. Name: $name"
+            )
+        )
+
+        val request = ChatGptRequest(
+            model = "gpt-3.5-turbo",
+            messages = messages
+        )
+
+        openAI.generateCompletion(request).enqueue(object : Callback<ChatGptResponse> {
+            override fun onResponse(
+                call: Call<ChatGptResponse>,
+                response: Response<ChatGptResponse>
+            ) {
+                if (response.isSuccessful) {
+                    val completion = response.body()
+                    if (completion != null && completion.choices.isNotEmpty()) {
+                        val translatedName = completion.choices[0].message.content.trim()
+                        handleContentBasedOnLanguage(translatedName)
+                    } else {
+                        Toast.makeText(
+                            this@CelestialActivity,
+                            "No translation found",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                } else {
+                    Toast.makeText(
+                        this@CelestialActivity,
+                        "Error: ${response.message()}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+
+            override fun onFailure(call: Call<ChatGptResponse>, t: Throwable) {
+                Log.e("CelestialActivity", "Network Failure: ${t.message}")
+                Toast.makeText(
+                    this@CelestialActivity,
+                    "Network error: ${t.message}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        })
+    }
+
+    private fun handleContentBasedOnLanguage(translatedName: String) {
+        val systemLanguage = Locale.getDefault().language
+        if (systemLanguage != "en") {
+            generateContentInSystemLanguage(translatedName, systemLanguage)
         }
+        // Fetch images from Wikipedia regardless of the language
+        getWikipediaContent(translatedName)
+    }
+
+    private fun generateContentInSystemLanguage(name: String, language: String) {
+        val messages = listOf(
+            ChatGptMessage(
+                role = "user",
+                content = "Generate information about the celestial object named $name in $language."
+            )
+        )
+
+        val request = ChatGptRequest(
+            model = "gpt-3.5-turbo",
+            messages = messages
+        )
+
+        openAI.generateCompletion(request).enqueue(object : Callback<ChatGptResponse> {
+            override fun onResponse(
+                call: Call<ChatGptResponse>,
+                response: Response<ChatGptResponse>
+            ) {
+                if (response.isSuccessful) {
+                    val completion = response.body()
+                    if (completion != null && completion.choices.isNotEmpty()) {
+                        val generatedContent = completion.choices[0].message.content.trim()
+                        titleTextView.text = name
+                        contentTextView.text = generatedContent
+                    } else {
+                        Toast.makeText(
+                            this@CelestialActivity,
+                            "No content generated",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                } else {
+                    Toast.makeText(
+                        this@CelestialActivity,
+                        "Error: ${response.message()}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+
+            override fun onFailure(call: Call<ChatGptResponse>, t: Throwable) {
+                Log.e("CelestialActivity", "Network Failure: ${t.message}")
+                Toast.makeText(
+                    this@CelestialActivity,
+                    "Network error: ${t.message}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        })
     }
 
     private fun getWikipediaContent(query: String) {
+        Log.e("CelestialActivity", "Query: $query")
         wikipediaAPI.getSearch(titles = query).enqueue(object : Callback<WikipediaResponseDTO> {
             override fun onResponse(
                 call: Call<WikipediaResponseDTO>,
@@ -77,10 +198,67 @@ class CelestialActivity : AppCompatActivity() {
             ) {
                 if (response.isSuccessful) {
                     val wikiResponse = response.body()
+                    Log.e("CelestialActivity", "Response: $wikiResponse")
                     if (wikiResponse != null && wikiResponse.query.pages.isNotEmpty()) {
                         val page = wikiResponse.query.pages[0]
-                        titleTextView.text = page.title
-                        contentTextView.text = page.extract
+                        val title = page.title
+                        val extract = page.extract
+
+                        val imageUrls = mutableListOf<String>()
+                        page.thumbnail?.let { imageUrls.add(it.source) }
+                        page.original?.let { imageUrls.add(it.source) }
+
+                        imageCarouselAdapter = ImageCarouselAdapter(imageUrls)
+                        imageCarousel.adapter = imageCarouselAdapter
+
+                        if (imageUrls.isEmpty()) {
+                            // Fallback to fetching images from Wikipedia again
+                            getWikipediaImages(query)
+                        }
+
+                        val systemLanguage = Locale.getDefault().language
+                        if (systemLanguage == "en") {
+                            titleTextView.text = title
+                            contentTextView.text = extract
+                        }
+                    } else {
+                        Toast.makeText(
+                            this@CelestialActivity,
+                            "No content found",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                } else {
+                    Toast.makeText(
+                        this@CelestialActivity,
+                        "Error: ${response.message()}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+
+            override fun onFailure(call: Call<WikipediaResponseDTO>, t: Throwable) {
+                Log.e("CelestialActivity", "Network Failure: ${t.message}")
+                Toast.makeText(
+                    this@CelestialActivity,
+                    "Network error: ${t.message}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        })
+    }
+
+    private fun getWikipediaImages(query: String) {
+        wikipediaAPI.getSearch(titles = query).enqueue(object : Callback<WikipediaResponseDTO> {
+            override fun onResponse(
+                call: Call<WikipediaResponseDTO>,
+                response: Response<WikipediaResponseDTO>
+            ) {
+                if (response.isSuccessful) {
+                    val wikiResponse = response.body()
+                    Log.e("CelestialActivity", "Response: $wikiResponse")
+                    if (wikiResponse != null && wikiResponse.query.pages.isNotEmpty()) {
+                        val page = wikiResponse.query.pages[0]
 
                         val imageUrls = mutableListOf<String>()
                         page.thumbnail?.let { imageUrls.add(it.source) }
@@ -91,7 +269,7 @@ class CelestialActivity : AppCompatActivity() {
                     } else {
                         Toast.makeText(
                             this@CelestialActivity,
-                            "No content found",
+                            "No images found",
                             Toast.LENGTH_SHORT
                         ).show()
                     }
@@ -162,7 +340,8 @@ class CelestialActivity : AppCompatActivity() {
         if (errorBody != null) {
             try {
                 val gson = Gson()
-                val errorResponse: SimpleResponseDTO = gson.fromJson(errorBody, SimpleResponseDTO::class.java)
+                val errorResponse: SimpleResponseDTO =
+                    gson.fromJson(errorBody, SimpleResponseDTO::class.java)
                 Toast.makeText(
                     this@CelestialActivity,
                     errorResponse.error ?: "Unknown error",
@@ -175,7 +354,6 @@ class CelestialActivity : AppCompatActivity() {
                     Toast.LENGTH_SHORT
                 ).show()
             } catch (e: IllegalStateException) {
-                // Handle case where response is not a JSON object
                 Toast.makeText(
                     this@CelestialActivity,
                     "Unexpected response format: $errorBody",

@@ -35,9 +35,9 @@
             android:layout_marginTop="15dp"
             android:src="@drawable/ic_back"
             android:contentDescription="@string/back_button"
+            android:background="@android:color/transparent"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
-            app:tint="@android:color/white"
             style="@style/imgButtonAR"/>
 
         <!-- LinearLayout for Content -->
@@ -93,10 +93,11 @@
                 android:id="@+id/logout_button"
                 style="@style/imgButtonAR"
                 android:contentDescription="@string/logout"
-                android:src="@drawable/logout_icon"
                 app:layout_constraintBottom_toBottomOf="parent"
+                android:background="@android:color/transparent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

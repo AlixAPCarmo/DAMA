@@ -5,14 +5,14 @@
     android:viewportHeight="24">
     <!-- Circle -->
     <path
-        android:strokeColor="#000000"
+        android:pathData="M12,2A10,10 0,1 1,2 12,10,10 0,0 1,12 2z"
         android:strokeWidth="0.25"
-        android:pathData="M12,2A10,10 0,1 1,2 12,10,10 0,0 1,12 2z" />
+        android:strokeColor="#000000" />
     <!-- Arrow pointing to left -->
     <path
-        android:strokeColor="#000000"
-        android:strokeWidth="1"
         android:pathData="M14,7L9,12L15,17"
+        android:strokeWidth="1"
+        android:strokeColor="#000000"
         android:strokeLineCap="round"
         android:strokeLineJoin="round" />
 </vector>

@@ -11,9 +11,11 @@
     <color name="background_color">#FFFFFF</color>
     <color name="background_color_withTransparency">#60FFFFFF</color>
     <color name="primaryColor">#6200EE</color>
+    <color name="primaryColorDark">#9FB1BC</color>
     <color name="textColorPrimary">#000000</color>
     <color name="textColorSecondary">#757575</color>
     <color name="midGrey">#c5c5c7</color>
+    <color name="gold">#E2C044</color>
 
 
 </resources>
