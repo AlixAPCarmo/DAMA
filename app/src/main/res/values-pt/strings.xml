@@ -46,4 +46,16 @@
     <string name="go_to_settings">Ir para Definições</string>
     <string name="cancel">Cancelar</string>
     <string name="framework_and_libraries">Frameworks e Bibliotecas</string>
+    <string name="list_title">Lista de Corpos Celestes</string>
+    <string name="view_in_ar">Vista RA</string>
+    <string name="ar_image_icon">Image icon RA</string>
+    <string name="task_description">Descrição de tarefa</string>
+    <string name="reset_password">Esqueci-me da palavra passe</string>
+    <string name="request_reset">Pedir Código</string>
+    <string name="new_password">Nova Palavra Passe</string>
+    <string name="token">Código[...]</string>
+    <string name="recover_password">Recuperar Palavra Passe</string>
+    <string name="search_hint">Procurar por corpo celeste</string>
+    <string name="search">Procurar</string>
+    <string name="delete">Apagar[...]</string>
 </resources>

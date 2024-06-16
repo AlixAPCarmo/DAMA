@@ -72,7 +72,7 @@ class MainActivity : ComponentActivity() {
 
         // Set up skip button click listener
         skipButton.setOnClickListener {
-            val intent = Intent(this, ArActivity::class.java)
+            val intent = Intent(this, ListActivity::class.java)
             startActivity(intent)
         }
 

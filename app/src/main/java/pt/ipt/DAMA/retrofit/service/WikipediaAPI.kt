@@ -23,5 +23,4 @@ interface WikipediaAPI {
         @Query("formatversion") formatversion: Int = 2,
         @Query("format") format: String = "json"
     ): Call<WikipediaResponseDTO>
-
 }

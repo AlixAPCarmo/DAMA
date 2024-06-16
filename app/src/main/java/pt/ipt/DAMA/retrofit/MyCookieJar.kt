@@ -66,8 +66,8 @@ class MyCookieJar(private val context: Context) : CookieJar {
     fun isUserLoggedIn(): Boolean {
         val baseUrlString = context.getString(R.string.ourAPI).split("://")[1].split("/")[0]
         val url = HttpUrl.Builder()
+            .scheme("http")
             .host(baseUrlString)
-            .scheme("https")
             .addPathSegment("api")
             .build()
         val cookies = loadForRequest(url)

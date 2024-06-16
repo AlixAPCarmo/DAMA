@@ -28,7 +28,7 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var passwordEditText: EditText
     private lateinit var signInButton: Button
     private lateinit var backButton: ImageView
-    private lateinit var skipButton: Button
+    private lateinit var forgotPasswordButton: Button
 
     // Retrofit initializer
     private lateinit var retrofit: RetrofitInitializer
@@ -44,7 +44,7 @@ class LoginActivity : AppCompatActivity() {
         passwordEditText = findViewById(R.id.password)
         signInButton = findViewById(R.id.sign_in_button)
         backButton = findViewById(R.id.back_button)
-        skipButton = findViewById(R.id.skip)
+        forgotPasswordButton = findViewById(R.id.forgot_password)
 
         // Initialize the retrofit for APIs interactions
         retrofit = RetrofitInitializer(this)
@@ -64,11 +64,10 @@ class LoginActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        // Set up skip button click listener
-        skipButton.setOnClickListener {
-            val intent = Intent(this, ArActivity::class.java)
+        // Set up forgot password button click listener
+        forgotPasswordButton.setOnClickListener {
+            val intent = Intent(this, RecoverPasswordActivity::class.java)
             startActivity(intent)
-            finish()
         }
     }
 

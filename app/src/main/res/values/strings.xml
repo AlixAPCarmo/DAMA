@@ -15,6 +15,18 @@
     <string name="back_button">back</string>
     <string name="positions_received">Positions received</string>
     <string name="positions_error">Positions request error</string>
+    <string name="list_title">Celestial Objects List</string>
+    <string name="view_in_ar">View in AR</string>
+    <string name="ar_image_icon">ar image icon</string>
+    <string name="task_description">Task Description</string>
+    <string name="reset_password">Reset Password</string>
+    <string name="request_reset">Request Token</string>
+    <string name="new_password">New Password</string>
+    <string name="token">Token\n</string>
+    <string name="recover_password">Recover Password</string>
+    <string name="search_hint">Search for a celestial</string>
+    <string name="search">Search</string>
+    <string name="delete">Del\n</string>
     <string name="user_not_logged_in">User not logged in</string>
     <string name="logged_out_successfully">Logged out successfully</string>
     <string name="unknown_error">Unknown error</string>
@@ -45,6 +57,16 @@
     <string name="go_to_settings">Go to Settings</string>
     <string name="cancel">Cancel</string>
     <string name="framework_and_libraries">Frameworks and Libraries</string>
+    <string name="no_translation_found">No translation found</string>
+    <string name="no_content_generated">No content generated</string>
+    <string name="no_images_found">No images found</string>
+    <string name="please_enter_your_email">Please enter your email</string>
+    <string name="please_enter_the_token_and_new_password">Please enter the token and new password</string>
+    <string name="password_reset_email_sent_successfully">Password reset email sent successfully</string>
+    <string name="error_sending_password_reset_email">Error sending password reset email</string>
+    <string name="request_failed">Request failed</string>
+    <string name="password_reset_successfully">Password reset successfully</string>
+    <string name="error_resetting_password">Error resetting password</string>
 
 
 </resources>

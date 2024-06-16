@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -23,7 +24,8 @@ import com.google.ar.sceneform.rendering.ViewRenderable
 import com.google.ar.sceneform.ux.ArFragment
 import com.google.ar.sceneform.ux.TransformableNode
 import pt.ipt.DAMA.R
-import pt.ipt.DAMA.ui.views.EmptyActivity
+import pt.ipt.DAMA.retrofit.MyCookieJar
+import pt.ipt.DAMA.ui.views.CelestialActivity
 
 class ArUtils(
     private val context: Context,
@@ -141,14 +143,19 @@ class ArUtils(
                     localPosition = Vector3(0.0f, 0.5f, 0.0f)
                     renderable = viewRenderable
                     val txtName = viewRenderable.view.findViewById<TextView>(R.id.planetName)
+                    val btn = viewRenderable.view.findViewById<ImageView>(R.id.planetButton)
                     txtName.text = name
-                    this.setOnTapListener { _,_ ->
-                        Log.d("Debug", "Button was clicked")
-                        Toast.makeText(context, "Button clicked", Toast.LENGTH_SHORT).show()
-                        val intent = Intent(context, EmptyActivity::class.java)
-                        context.startActivity(intent)
-                        TODO("Abrir ecrã de detalhes do planeta")
+                    if(MyCookieJar(context).isUserLoggedIn()){
+                        this.setOnTapListener { _,_ ->
+                            val intent = Intent(context, CelestialActivity::class.java)
+                            intent.putExtra("name", name)
+                            context.startActivity(intent)
+                        }
+                        btn.visibility = TextView.VISIBLE
+                    }else{
+                        btn.visibility = TextView.GONE
                     }
+
                 }
                 sphereNode.setOnTapListener{ _, _ ->
                     if (infoNode.parent == null) {

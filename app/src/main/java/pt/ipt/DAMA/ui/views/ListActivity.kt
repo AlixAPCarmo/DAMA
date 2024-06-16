@@ -4,6 +4,10 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.os.Bundle
+import android.util.Log
+import android.widget.EditText
+import android.widget.ImageButton
+import android.widget.LinearLayout
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -14,9 +18,13 @@ import com.google.gson.JsonSyntaxException
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import pt.ipt.DAMA.R
 import pt.ipt.DAMA.hardware.GpsManager
+import pt.ipt.DAMA.model.API.CelestialCreateRequestDTO
+import pt.ipt.DAMA.model.API.CelestialDeleteRequestDTO
+import pt.ipt.DAMA.model.API.CelestialFindRequestDTO
 import pt.ipt.DAMA.model.API.SimpleResponseDTO
 import pt.ipt.DAMA.model.astronomyAPI.AstronomyPositionResponseDTO
 import pt.ipt.DAMA.model.astronomyAPI.AstronomyRequestDTO
+import pt.ipt.DAMA.model.pexelsImageAPI.ImageResponseDTO
 import pt.ipt.DAMA.model.wikipédia.WikipediaResponseDTO
 import pt.ipt.DAMA.retrofit.MyCookieJar
 import pt.ipt.DAMA.retrofit.RetrofitInitializer
@@ -27,17 +35,21 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class ListActivity: AppCompatActivity() {
+class ListActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: ListAdapter
     private lateinit var gpsManager: GpsManager
 
     private lateinit var retrofit: RetrofitInitializer
-    private var listItens = emptyArray<ItemList>()
+    private var listItems = mutableListOf<ItemList>()
 
-    private lateinit var btnAR: Button
-    private lateinit var btnLogout: Button
+    private lateinit var btnAR: LinearLayout
+    private lateinit var btnLogout: ImageButton
+    private lateinit var btnBack: ImageButton
+    private lateinit var searchInput: EditText
+    private lateinit var searchButton: ImageButton
+    private lateinit var searchBarLayout: LinearLayout
 
     @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,22 +60,45 @@ class ListActivity: AppCompatActivity() {
         // Setup RecyclerView with a LinearLayoutManager
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
+        adapter = ListAdapter(listItems, this) { item -> findByNameandUser(item) }
+        recyclerView.adapter = adapter
 
-        // Initialize Retrofit and GpsManager
         retrofit = RetrofitInitializer(this)
         gpsManager = GpsManager(this)
 
-        // Setup AR button to navigate to the AR Activity
-        btnAR = findViewById(R.id.arButton)
+        btnAR = findViewById(R.id.ar_button)
         btnAR.setOnClickListener {
             val intent = Intent(this, ArActivity::class.java)
             startActivity(intent)
         }
         // Setup Logout button to logout the user
-        btnLogout = findViewById(R.id.logoutButton)
-        btnLogout.setOnClickListener {
-            logoutUser()
+        btnLogout = findViewById(R.id.logout_button)
+        btnLogout.setOnClickListener { logoutUser() }
+
+        btnBack = findViewById(R.id.back_button)
+        btnBack.setOnClickListener {
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
         }
+
+        // if user not logged in, search button is hidden
+        if (!MyCookieJar(this).isUserLoggedIn()) {
+            searchBarLayout = findViewById(R.id.search_bar_layout)
+            searchBarLayout.visibility = LinearLayout.GONE
+        } else {
+            searchInput = findViewById(R.id.search_input)
+            searchButton = findViewById(R.id.search_button)
+            searchButton.setOnClickListener {
+                val searchTerm = searchInput.text.toString()
+                if (searchTerm.isNotEmpty()) {
+                    addSearchResult(searchTerm)
+                } else {
+                    logMessage("Please enter a search term")
+                }
+            }
+            loadAllCelestialObjects()
+        }
+
         loadDataName()
     }
 
@@ -90,10 +125,15 @@ class ListActivity: AppCompatActivity() {
                         // Load data from the Astronomy API
                         res.data.table.rows.forEach {
                             count++
-                            loadDataImage(it.entry.name, count >= size)
+                            val name = it.entry.name
+                            listItems.add(ItemList(name, "", false, 0, Runnable {
+                                val intent = Intent(this@ListActivity, CelestialActivity::class.java)
+                                intent.putExtra("name", name)
+                                startActivity(intent)
+                            }))
+                            loadDataImage(name, count >= size)
                             Thread.sleep(100)
                         }
-
                     }
                 }
 
@@ -106,55 +146,153 @@ class ListActivity: AppCompatActivity() {
     }
 
     /**
-     * Load images for each item using the Wikipedia API
+     * Load data for celestial objects from the API
      */
-    private fun loadDataImage(query: String, end: Boolean){
-        retrofit.WikiAPI().getSearch(titles = query).enqueue(object : Callback<WikipediaResponseDTO> {
-            override fun onResponse(
-                call: Call<WikipediaResponseDTO>,
-                response: Response<WikipediaResponseDTO>
-            ) {
+    private fun loadAllCelestialObjects() {
+        val call = retrofit.API().getAllCelestialObjects()
+        call.enqueue(object : Callback<SimpleResponseDTO> {
+            override fun onResponse(call: Call<SimpleResponseDTO>, response: Response<SimpleResponseDTO>) {
                 if (response.isSuccessful) {
-                    val wikiResponse = response.body()
-                    if (wikiResponse != null && wikiResponse.query.pages.isNotEmpty()) {
-                        val page = wikiResponse.query.pages[0]
-                        // Add item to the list
-                        listItens += ItemList(
-                            query,
-                            (page.thumbnail?.source ?: page.original?.source).toString()
-                        ){
-                            val intent = Intent(this@ListActivity, MainActivity::class.java)
-                            intent.putExtra("planet", query)
+                    val celestialObjects = response.body()?.data as? List<Map<String, Any>>
+                    Log.e("ListActivity", "Celestial objects: $celestialObjects")
+                    celestialObjects?.forEach { item ->
+                        val name = item["name"] as? String ?: ""
+                        val id = item["id"] as? Int ?: 0
+                        listItems.add(ItemList(name, "", true, id, Runnable {
+                            val intent = Intent(this@ListActivity, CelestialActivity::class.java)
+                            intent.putExtra("name", name)
                             startActivity(intent)
-                            TODO("Alterar para a pagina de more info")
+                        }))
+                    }
+                    adapter.notifyDataSetChanged()
+                    listItems.forEach { item ->
+                        if (item.isFromApi) {
+                            loadDataImage(item.name, false)
                         }
-                        // Update RecyclerView when all items are loaded
-                        if(end){
-                            adapter = ListAdapter(listItens.toList(), this@ListActivity)
-                            recyclerView.adapter = adapter
-                        }
-                    } else {
-                        Toast.makeText(
-                            this@ListActivity,
-                            getString(R.string.no_content_found),
-                            Toast.LENGTH_SHORT
-                        ).show()
                     }
                 } else {
-                    Toast.makeText(
-                        this@ListActivity,
-                        getString(R.string.error)+": ${response.message()}",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    logMessage("Failed to fetch celestial objects")
                 }
             }
 
-            override fun onFailure(call: Call<WikipediaResponseDTO>, t: Throwable) {
-                Toast.makeText(
-                    this@ListActivity,
-                    getString(R.string.network_error)+": ${t.message}",
-                    Toast.LENGTH_SHORT
-                ).show()
+            override fun onFailure(call: Call<SimpleResponseDTO>, t: Throwable) {
+                t.printStackTrace()
+                logMessage("Error fetching celestial objects")
+            }
+        })
+    }
+
+    /**
+     * Load data for celestial objects from the Image API
+     */
+    private fun loadDataImage(query: String, end: Boolean) {
+        retrofit.ImageAPI().searchPhotos("planet $query").enqueue(object : Callback<ImageResponseDTO> {
+            override fun onResponse(call: Call<ImageResponseDTO>, response: Response<ImageResponseDTO>) {
+                if (response.isSuccessful) {
+                    val data = response.body()
+                    if (data != null && data.photos.isNotEmpty()) {
+                        val photoUrl = data.photos[0].src.medium
+                        val existingItem = listItems.find { it.name == query }
+                        if (existingItem != null) {
+                            existingItem.imageResource = photoUrl
+                            logMessage("Image loaded for $query: $photoUrl")
+                            adapter.notifyDataSetChanged()
+                        } else {
+                            logMessage("Existing item not found for $query")
+                        }
+                    } else {
+                        logMessage("No images found for $query")
+                    }
+                } else {
+                    logMessage("Failed to fetch image for $query")
+                }
+            }
+
+            override fun onFailure(call: Call<ImageResponseDTO>, t: Throwable) {
+                t.printStackTrace()
+                logMessage("Error fetching image for $query")
+            }
+        })
+    }
+
+    /**
+     * Add a new celestial object to the database
+     */
+    private fun addSearchResult(query: String) {
+        val newCelestial = CelestialCreateRequestDTO(name = query)
+        retrofit.API().createCelestialObject(newCelestial).enqueue(object : Callback<SimpleResponseDTO> {
+            override fun onResponse(call: Call<SimpleResponseDTO>, response: Response<SimpleResponseDTO>) {
+                if (response.isSuccessful) {
+                    loadAllCelestialObjects()
+                } else {
+                    logMessage("Failed to add celestial object")
+                }
+            }
+
+            override fun onFailure(call: Call<SimpleResponseDTO>, t: Throwable) {
+                t.printStackTrace()
+                logMessage("Error adding celestial object")
+            }
+        })
+    }
+
+    /**
+     * Delete celestial object by ID
+     */
+    private fun deleteCelestialObject(id: Int) {
+        val deleteRequest = CelestialDeleteRequestDTO(id = id)
+        Log.d("ListActivity", "Sending delete request for item: ${id}")
+
+        retrofit.API().deleteCelestialObject(deleteRequest).enqueue(object : Callback<Void> {
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                Log.d("ListActivity", "Delete response code: ${response.code()}")
+                if (response.isSuccessful) {
+                    logMessage("Celestial object deleted successfully")
+                } else {
+                    Log.e("ListActivity", "Failed to delete celestial object, response code: ${response.code()}, response message: ${response.message()}")
+                    logMessage("Failed to delete celestial object")
+                }
+            }
+
+            override fun onFailure(call: Call<Void>, t: Throwable) {
+                Log.e("ListActivity", "Error deleting celestial object", t)
+                logMessage("Error deleting celestial object")
+            }
+        })
+    }
+
+    /**
+     * Find celestial object by name and delete it
+     */
+    private fun findByNameandUser(item: ItemList) {
+        // remove "" from item.name
+        val name = item.name.replace("\"", "")
+
+        val findRequest = CelestialFindRequestDTO(name = name)
+        val call = retrofit.API().findCelestialObject(findRequest)
+        call.enqueue(object : Callback<SimpleResponseDTO> {
+            override fun onResponse(call: Call<SimpleResponseDTO>, response: Response<SimpleResponseDTO>) {
+                if (response.isSuccessful) {
+                    val data = response.body()?.data
+                    logMessage("Celestial object found: $data")
+                    val celestialId = (data as? Double)?.toInt()
+                    logMessage("Celestial object ID: $celestialId")
+                    if (celestialId != null) {
+                        listItems.remove(item)
+                        adapter.notifyDataSetChanged()
+                        deleteCelestialObject(celestialId)
+                    } else {
+                        logMessage("Celestial object ID is null")
+                    }
+                } else {
+                    logMessage("Failed to fetch celestial objects")
+                    logMessage(response.errorBody()?.string() ?: "No error message")
+                }
+            }
+
+            override fun onFailure(call: Call<SimpleResponseDTO>, t: Throwable) {
+                t.printStackTrace()
+                logMessage("Error fetching celestial objects")
             }
         })
     }
@@ -164,16 +302,12 @@ class ListActivity: AppCompatActivity() {
      */
     private fun logoutUser() {
         retrofit.API().logoutUser().enqueue(object : Callback<SimpleResponseDTO> {
-            override fun onResponse(
-                call: Call<SimpleResponseDTO>,
-                response: Response<SimpleResponseDTO>
-            ) {
+            override fun onResponse(call: Call<SimpleResponseDTO>, response: Response<SimpleResponseDTO>) {
                 if (response.isSuccessful) {
                     val logoutResponse = response.body()
                     if (logoutResponse != null && logoutResponse.ok) {
                         // Clear cookies
                         MyCookieJar(this@ListActivity).clearCookies(getString(R.string.ourAPI).toHttpUrlOrNull()!!)
-
                         Toast.makeText(
                             this@ListActivity,
                             getString(R.string.logged_out_successfully),
@@ -236,5 +370,8 @@ class ListActivity: AppCompatActivity() {
             Toast.makeText(this@ListActivity, getString(R.string.unknown_error), Toast.LENGTH_SHORT).show()
         }
     }
-}
 
+    private fun logMessage(message: String) {
+        Log.d("ListActivity", message)
+    }
+}
