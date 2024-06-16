@@ -79,6 +79,10 @@ class CelestialActivity : AppCompatActivity() {
         translateName(name)
     }
 
+
+    /**
+     * Translate the celestial object name to English
+     */
     private fun translateName(name: String) {
         val messages = listOf(
             ChatGptMessage(
@@ -105,14 +109,14 @@ class CelestialActivity : AppCompatActivity() {
                     } else {
                         Toast.makeText(
                             this@CelestialActivity,
-                            "No translation found",
+                            getString(R.string.no_translation_found),
                             Toast.LENGTH_SHORT
                         ).show()
                     }
                 } else {
                     Toast.makeText(
                         this@CelestialActivity,
-                        "Error: ${response.message()}",
+                        getString(R.string.error) +": ${response.message()}",
                         Toast.LENGTH_SHORT
                     ).show()
                 }
@@ -122,13 +126,16 @@ class CelestialActivity : AppCompatActivity() {
                 Log.e("CelestialActivity", "Network Failure: ${t.message}")
                 Toast.makeText(
                     this@CelestialActivity,
-                    "Network error: ${t.message}",
+                    getString(R.string.network_error)+": ${t.message}",
                     Toast.LENGTH_SHORT
                 ).show()
             }
         })
     }
 
+    /**
+     * Fetch content about the celestial object based on the system language
+     */
     private fun handleContentBasedOnLanguage(translatedName: String) {
         val systemLanguage = Locale.getDefault().language
         if (systemLanguage != "en") {
@@ -138,6 +145,9 @@ class CelestialActivity : AppCompatActivity() {
         getWikipediaContent(translatedName)
     }
 
+    /**
+     * Generate content about the celestial object in the system language
+     */
     private fun generateContentInSystemLanguage(name: String, language: String) {
         val messages = listOf(
             ChatGptMessage(
@@ -165,14 +175,14 @@ class CelestialActivity : AppCompatActivity() {
                     } else {
                         Toast.makeText(
                             this@CelestialActivity,
-                            "No content generated",
+                            getString(R.string.no_content_generated),
                             Toast.LENGTH_SHORT
                         ).show()
                     }
                 } else {
                     Toast.makeText(
                         this@CelestialActivity,
-                        "Error: ${response.message()}",
+                        getString(R.string.error)+": ${response.message()}",
                         Toast.LENGTH_SHORT
                     ).show()
                 }
@@ -182,13 +192,16 @@ class CelestialActivity : AppCompatActivity() {
                 Log.e("CelestialActivity", "Network Failure: ${t.message}")
                 Toast.makeText(
                     this@CelestialActivity,
-                    "Network error: ${t.message}",
+                    getString(R.string.network_error)+": ${t.message}",
                     Toast.LENGTH_SHORT
                 ).show()
             }
         })
     }
 
+    /**
+     * Fetch content about the celestial object from Wikipedia
+     */
     private fun getWikipediaContent(query: String) {
         Log.e("CelestialActivity", "Query: $query")
         wikipediaAPI.getSearch(titles = query).enqueue(object : Callback<WikipediaResponseDTO> {
@@ -224,14 +237,14 @@ class CelestialActivity : AppCompatActivity() {
                     } else {
                         Toast.makeText(
                             this@CelestialActivity,
-                            "No content found",
+                            getString(R.string.no_content_found),
                             Toast.LENGTH_SHORT
                         ).show()
                     }
                 } else {
                     Toast.makeText(
                         this@CelestialActivity,
-                        "Error: ${response.message()}",
+                        getString(R.string.error)+": ${response.message()}",
                         Toast.LENGTH_SHORT
                     ).show()
                 }
@@ -241,13 +254,16 @@ class CelestialActivity : AppCompatActivity() {
                 Log.e("CelestialActivity", "Network Failure: ${t.message}")
                 Toast.makeText(
                     this@CelestialActivity,
-                    "Network error: ${t.message}",
+                    getString(R.string.network_error)+": ${t.message}",
                     Toast.LENGTH_SHORT
                 ).show()
             }
         })
     }
 
+    /**
+     * Fetch images of the celestial object from Wikipedia
+     */
     private fun getWikipediaImages(query: String) {
         wikipediaAPI.getSearch(titles = query).enqueue(object : Callback<WikipediaResponseDTO> {
             override fun onResponse(
@@ -269,14 +285,14 @@ class CelestialActivity : AppCompatActivity() {
                     } else {
                         Toast.makeText(
                             this@CelestialActivity,
-                            "No images found",
+                            getString(R.string.no_images_found),
                             Toast.LENGTH_SHORT
                         ).show()
                     }
                 } else {
                     Toast.makeText(
                         this@CelestialActivity,
-                        "Error: ${response.message()}",
+                        getString(R.string.error)+": ${response.message()}",
                         Toast.LENGTH_SHORT
                     ).show()
                 }
@@ -286,13 +302,16 @@ class CelestialActivity : AppCompatActivity() {
                 Log.e("CelestialActivity", "Network Failure: ${t.message}")
                 Toast.makeText(
                     this@CelestialActivity,
-                    "Network error: ${t.message}",
+                    getString(R.string.network_error)+": ${t.message}",
                     Toast.LENGTH_SHORT
                 ).show()
             }
         })
     }
 
+    /**
+     * Logout the user
+     */
     private fun logoutUser() {
         api.logoutUser().enqueue(object : Callback<SimpleResponseDTO> {
             override fun onResponse(
@@ -307,7 +326,7 @@ class CelestialActivity : AppCompatActivity() {
 
                         Toast.makeText(
                             this@CelestialActivity,
-                            "Logged out successfully",
+                            getString(R.string.logged_out_successfully),
                             Toast.LENGTH_SHORT
                         ).show()
                         val intent = Intent(this@CelestialActivity, ArActivity::class.java)
@@ -315,7 +334,7 @@ class CelestialActivity : AppCompatActivity() {
                     } else {
                         Toast.makeText(
                             this@CelestialActivity,
-                            logoutResponse?.error ?: "Unknown error",
+                            logoutResponse?.error ?: getString(R.string.unknown_error),
                             Toast.LENGTH_SHORT
                         ).show()
                     }
@@ -328,13 +347,16 @@ class CelestialActivity : AppCompatActivity() {
                 Log.e("CelestialActivity", "Network Failure: ${t.message}")
                 Toast.makeText(
                     this@CelestialActivity,
-                    "Network error: ${t.message}",
+                    getString(R.string.network_error)+": ${t.message}",
                     Toast.LENGTH_SHORT
                 ).show()
             }
         })
     }
 
+    /**
+     * Handle error responses from the API
+     */
     private fun handleErrorResponse(response: Response<SimpleResponseDTO>) {
         val errorBody = response.errorBody()?.string()
         if (errorBody != null) {
@@ -344,24 +366,24 @@ class CelestialActivity : AppCompatActivity() {
                     gson.fromJson(errorBody, SimpleResponseDTO::class.java)
                 Toast.makeText(
                     this@CelestialActivity,
-                    errorResponse.error ?: "Unknown error",
+                    errorResponse.error ?: getString(R.string.unknown_error),
                     Toast.LENGTH_SHORT
                 ).show()
             } catch (e: JsonSyntaxException) {
                 Toast.makeText(
                     this@CelestialActivity,
-                    "Error parsing response: $errorBody",
+                    getString(R.string.error_parsing_response)+": $errorBody",
                     Toast.LENGTH_SHORT
                 ).show()
             } catch (e: IllegalStateException) {
                 Toast.makeText(
                     this@CelestialActivity,
-                    "Unexpected response format: $errorBody",
+                    getString(R.string.unexpected_response_format)+": $errorBody",
                     Toast.LENGTH_SHORT
                 ).show()
             }
         } else {
-            Toast.makeText(this@CelestialActivity, "Unknown error", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this@CelestialActivity, getString(R.string.unknown_error), Toast.LENGTH_SHORT).show()
         }
     }
 }

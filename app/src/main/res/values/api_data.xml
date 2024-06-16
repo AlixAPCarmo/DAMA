@@ -5,6 +5,6 @@
     <string name="astronomy_url" translatable="false">https://api.astronomyapi.com/api/v2/</string>
     <string name="astronomy_appId" translatable="false">f57f77f5-f9de-45d7-827b-02ec9e08628c</string>
     <string name="astronomy_appSecret" translatable="false">4e46df0069cdb2e4afd9e6516494d12e294a1b925eb1c926eae03b114fb76d7dab4d82cb5287afd0f01a6d2b123ef2e7255da48565d774a9df1c5aa9a8e6e90e0e623608b3f3d7850a2c9dc1b29cf9bf59360f0205fbd2a5a08e2d2c8806e5bd5b1456705ff230bba254a0692f56df94</string>
-    <string name="openAIAPI">https://api.openai.com/</string>
+    <string name="openAIAPI" translatable="false">https://api.openai.com/</string>
     <string name="ourAPI" translatable="false">https://86ff-2001-8a0-dd94-bf01-da3a-ddff-fee0-61fa.ngrok-free.app/api/</string>
 </resources>

@@ -39,27 +39,33 @@ class RecoverPasswordActivity : AppCompatActivity() {
         // Retrofit initializer
         retrofitAPI = RetrofitInitializer(this)
 
+        // Set up button click listeners for password recovery
         requestResetButton.setOnClickListener {
             val email = emailEditText.text.toString()
             if (email.isNotEmpty()) {
                 requestPasswordReset(email)
             } else {
-                Toast.makeText(this, "Please enter your email", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.please_enter_your_email), Toast.LENGTH_SHORT).show()
             }
         }
 
+        // Set up button click listeners for password reset
         resetPasswordButton.setOnClickListener {
             val token = tokenEditText.text.toString()
             val newPassword = newPasswordEditText.text.toString()
             if (token.isNotEmpty() && newPassword.isNotEmpty()) {
                 resetPassword(token, newPassword)
             } else {
-                Toast.makeText(this, "Please enter the token and new password", Toast.LENGTH_SHORT)
+                Toast.makeText(this,
+                    getString(R.string.please_enter_the_token_and_new_password), Toast.LENGTH_SHORT)
                     .show()
             }
         }
     }
 
+    /**
+     * Request a password reset for the given email
+     */
     private fun requestPasswordReset(email: String) {
         val emailInfo = EmailDTO(email)
         retrofitAPI.API().requestPasswordReset(emailInfo)
@@ -71,13 +77,13 @@ class RecoverPasswordActivity : AppCompatActivity() {
                     if (response.isSuccessful) {
                         Toast.makeText(
                             this@RecoverPasswordActivity,
-                            "Password reset email sent successfully",
+                            getString(R.string.password_reset_email_sent_successfully),
                             Toast.LENGTH_SHORT
                         ).show()
                     } else {
                         Toast.makeText(
                             this@RecoverPasswordActivity,
-                            "Error sending password reset email",
+                            getString(R.string.error_sending_password_reset_email),
                             Toast.LENGTH_SHORT
                         ).show()
                     }
@@ -86,13 +92,17 @@ class RecoverPasswordActivity : AppCompatActivity() {
                 override fun onFailure(call: Call<SimpleResponseDTO>, t: Throwable) {
                     Toast.makeText(
                         this@RecoverPasswordActivity,
-                        "Request failed: ${t.message}",
+                        getString(R.string.request_failed)+": ${t.message}",
                         Toast.LENGTH_SHORT
                     ).show()
                 }
             })
     }
 
+
+    /**
+     * Reset the password for the given token and new password
+     */
     private fun resetPassword(token: String, newPassword: String) {
         val resetInfo = PasswordResetDTO(newPassword, token)
         retrofitAPI.API().resetPassword(resetInfo).enqueue(object : Callback<SimpleResponseDTO> {
@@ -103,7 +113,7 @@ class RecoverPasswordActivity : AppCompatActivity() {
                 if (response.isSuccessful) {
                     Toast.makeText(
                         this@RecoverPasswordActivity,
-                        "Password reset successfully",
+                        getString(R.string.password_reset_successfully),
                         Toast.LENGTH_SHORT
                     ).show()
                     val intent = Intent(this@RecoverPasswordActivity, LoginActivity::class.java)
@@ -112,7 +122,7 @@ class RecoverPasswordActivity : AppCompatActivity() {
                 } else {
                     Toast.makeText(
                         this@RecoverPasswordActivity,
-                        "Error resetting password",
+                        getString(R.string.error_resetting_password),
                         Toast.LENGTH_SHORT
                     ).show()
                 }
@@ -121,7 +131,7 @@ class RecoverPasswordActivity : AppCompatActivity() {
             override fun onFailure(call: Call<SimpleResponseDTO>, t: Throwable) {
                 Toast.makeText(
                     this@RecoverPasswordActivity,
-                    "Request failed: ${t.message}",
+                    getString(R.string.request_failed)+": ${t.message}",
                     Toast.LENGTH_SHORT
                 ).show()
             }

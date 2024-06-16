@@ -67,8 +67,7 @@ class MyCookieJar(private val context: Context) : CookieJar {
         val baseUrlString = context.getString(R.string.ourAPI).split("://")[1].split("/")[0]
         val url = HttpUrl.Builder()
             .scheme("http")
-            .host(baseUrlString.split(":")[0])
-            .port(baseUrlString.split(":")[1].toInt())
+            .host(baseUrlString)
             .addPathSegment("api")
             .build()
         val cookies = loadForRequest(url)

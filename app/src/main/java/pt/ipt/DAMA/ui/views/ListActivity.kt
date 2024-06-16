@@ -24,6 +24,7 @@ import pt.ipt.DAMA.model.API.CelestialFindRequestDTO
 import pt.ipt.DAMA.model.API.SimpleResponseDTO
 import pt.ipt.DAMA.model.astronomyAPI.AstronomyPositionResponseDTO
 import pt.ipt.DAMA.model.astronomyAPI.AstronomyRequestDTO
+import pt.ipt.DAMA.model.pexelsImageAPI.ImageResponseDTO
 import pt.ipt.DAMA.model.wikipédia.WikipediaResponseDTO
 import pt.ipt.DAMA.retrofit.MyCookieJar
 import pt.ipt.DAMA.retrofit.RetrofitInitializer
@@ -144,6 +145,9 @@ class ListActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Load data for celestial objects from the API
+     */
     private fun loadAllCelestialObjects() {
         val call = retrofit.API().getAllCelestialObjects()
         call.enqueue(object : Callback<SimpleResponseDTO> {
@@ -178,6 +182,9 @@ class ListActivity : AppCompatActivity() {
         })
     }
 
+    /**
+     * Load data for celestial objects from the Image API
+     */
     private fun loadDataImage(query: String, end: Boolean) {
         retrofit.ImageAPI().searchPhotos("planet $query").enqueue(object : Callback<ImageResponseDTO> {
             override fun onResponse(call: Call<ImageResponseDTO>, response: Response<ImageResponseDTO>) {
@@ -208,6 +215,9 @@ class ListActivity : AppCompatActivity() {
         })
     }
 
+    /**
+     * Add a new celestial object to the database
+     */
     private fun addSearchResult(query: String) {
         val newCelestial = CelestialCreateRequestDTO(name = query)
         retrofit.API().createCelestialObject(newCelestial).enqueue(object : Callback<SimpleResponseDTO> {
@@ -226,6 +236,9 @@ class ListActivity : AppCompatActivity() {
         })
     }
 
+    /**
+     * Delete celestial object by ID
+     */
     private fun deleteCelestialObject(id: Int) {
         val deleteRequest = CelestialDeleteRequestDTO(id = id)
         Log.d("ListActivity", "Sending delete request for item: ${id}")
@@ -248,6 +261,9 @@ class ListActivity : AppCompatActivity() {
         })
     }
 
+    /**
+     * Find celestial object by name and delete it
+     */
     private fun findByNameandUser(item: ItemList) {
         // remove "" from item.name
         val name = item.name.replace("\"", "")

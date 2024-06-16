@@ -147,16 +147,12 @@ class ArUtils(
                     txtName.text = name
                     if(MyCookieJar(context).isUserLoggedIn()){
                         this.setOnTapListener { _,_ ->
-                            Toast.makeText(context, "Button clicked", Toast.LENGTH_SHORT).show()
                             val intent = Intent(context, CelestialActivity::class.java)
                             intent.putExtra("name", name)
                             context.startActivity(intent)
                         }
                         btn.visibility = TextView.VISIBLE
                     }else{
-                        this.setOnTapListener { _, _ ->
-                            Toast.makeText(context, "Button clicked", Toast.LENGTH_SHORT).show()
-                        }
                         btn.visibility = TextView.GONE
                     }
 
