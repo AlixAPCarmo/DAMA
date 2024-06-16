@@ -2,11 +2,13 @@ package pt.ipt.DAMA.ui.views
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import pt.ipt.DAMA.model.API.SimpleResponseDTO
@@ -26,13 +28,14 @@ class RegisterActivity : AppCompatActivity() {
     private lateinit var emailEditText: EditText
     private lateinit var passwordEditText: EditText
     private lateinit var signUpButton: Button
-    private lateinit var skipButton: Button
+    private lateinit var skipButton: TextView
     private lateinit var backButton: ImageView
     private lateinit var retrofit: RetrofitInitializer
 
-    @SuppressLint("MissingInflatedId")
+    @SuppressLint("MissingInflatedId", "SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         setContentView(R.layout.activity_register)
 
         // Initialize UI components
@@ -60,32 +63,29 @@ class RegisterActivity : AppCompatActivity() {
 
         // Set up back button click listener
         backButton.setOnClickListener {
-            val intent = Intent(this, LoginActivity::class.java)
+            val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
             finish()
         }
 
         // Set up skip button click listener
         skipButton.setOnClickListener {
-            val intent = Intent(this, CelestialActivity::class.java)
+            val intent = Intent(this, ArActivity::class.java)
             startActivity(intent)
             finish()
         }
     }
 
-    /*
-    * Function to register a user
+    /**
+     * Function to register a user
      */
     private fun registerUser(firstName: String, lastName: String, email: String, password: String) {
-        // Create a Retrofit instance
+        // Make the API request for user registration
         val callOurAPI =
             retrofit.API().registerUser(UserRegisterDTO(email, password, firstName, lastName))
 
-        // Make the network request
+        // Handle the response from the API
         callOurAPI.enqueue(object : Callback<SimpleResponseDTO> {
-            /*
-            * Handle the response from the server
-             */
             override fun onResponse(
                 call: Call<SimpleResponseDTO>,
                 response: Response<SimpleResponseDTO>
@@ -102,11 +102,10 @@ class RegisterActivity : AppCompatActivity() {
                         // navigate to the login activity
                         val intent = Intent(this@RegisterActivity, LoginActivity::class.java)
                         startActivity(intent)
-                        finish()
                     } else {
                         Toast.makeText(
                             this@RegisterActivity,
-                            registerResponse?.error ?: "Unknown error",
+                            registerResponse?.error ?: getString(R.string.unknown_error),
                             Toast.LENGTH_SHORT
                         ).show()
                     }
@@ -120,7 +119,7 @@ class RegisterActivity : AppCompatActivity() {
                                 gson.fromJson(errorBody, SimpleResponseDTO::class.java)
                             Toast.makeText(
                                 this@RegisterActivity,
-                                registerResponse.error ?: "Unknown error",
+                                registerResponse.error ?:getString(R.string.unknown_error),
                                 Toast.LENGTH_SHORT
                             ).show()
                         } catch (e: JsonSyntaxException) {
@@ -129,7 +128,7 @@ class RegisterActivity : AppCompatActivity() {
                                 .show()
                         }
                     } else {
-                        Toast.makeText(this@RegisterActivity, "Unknown error", Toast.LENGTH_SHORT)
+                        Toast.makeText(this@RegisterActivity, getString(R.string.unknown_error), Toast.LENGTH_SHORT)
                             .show()
                     }
                 }
@@ -139,7 +138,7 @@ class RegisterActivity : AppCompatActivity() {
                 Log.e("RegisterActivity", "Network Failure: ${t.message}")
                 Toast.makeText(
                     this@RegisterActivity,
-                    "Network error: ${t.message}",
+                    getString(R.string.network_error) +": ${t.message}",
                     Toast.LENGTH_SHORT
                 ).show()
             }

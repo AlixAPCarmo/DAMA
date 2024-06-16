@@ -5,6 +5,9 @@ import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query
 
+/**
+ * Interface to represent the Wikipedia API
+ */
 interface WikipediaAPI {
     @GET("api.php")
     fun getSearch(

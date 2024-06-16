@@ -17,6 +17,9 @@ import retrofit2.http.HTTP
 import retrofit2.http.POST
 import retrofit2.http.PUT
 
+/**
+ * Interface to represent the API
+ */
 interface OurAPI {
     @POST("login")
     fun login(@Body credentials: LoginRequestDTO): Call<SimpleResponseDTO>

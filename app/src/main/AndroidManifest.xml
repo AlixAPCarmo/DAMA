@@ -38,6 +38,9 @@
             android:name=".ui.views.RegisterActivity"
             android:theme="@style/Theme.AppCompat" />
         <activity
+            android:name=".ui.views.AboutUsActivity"
+            android:theme="@style/Theme.AppCompat" />
+        <activity
             android:name=".ui.views.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.AppCompat">

@@ -1,6 +1,8 @@
 package pt.ipt.DAMA.ui.views
 
+import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
@@ -31,8 +33,10 @@ class LoginActivity : AppCompatActivity() {
     // Retrofit initializer
     private lateinit var retrofit: RetrofitInitializer
 
+    @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         setContentView(R.layout.activity_login)
 
         // Initialize UI components
@@ -42,7 +46,7 @@ class LoginActivity : AppCompatActivity() {
         backButton = findViewById(R.id.back_button)
         forgotPasswordButton = findViewById(R.id.forgot_password)
 
-        // Initialize the retrofit variable with context
+        // Initialize the retrofit for APIs interactions
         retrofit = RetrofitInitializer(this)
 
         // Set up sign-in button click listener
@@ -58,7 +62,6 @@ class LoginActivity : AppCompatActivity() {
         backButton.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
-            finish()
         }
 
         // Set up forgot password button click listener
@@ -68,6 +71,9 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Login User
+     */
     private fun loginUser(email: String, password: String) {
         val callOurAPI = retrofit.API().login(LoginRequestDTO(email, password))
 
@@ -85,7 +91,7 @@ class LoginActivity : AppCompatActivity() {
                         startActivity(intent)
                         finish()
                     } else {
-                        Toast.makeText(this@LoginActivity, loginResponse?.error ?: "Unknown error", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@LoginActivity, loginResponse?.error ?: getString(R.string.unknown_error), Toast.LENGTH_SHORT).show()
                     }
                 } else {
                     handleErrorResponse(response)
@@ -94,26 +100,29 @@ class LoginActivity : AppCompatActivity() {
 
             override fun onFailure(call: Call<SimpleResponseDTO>, t: Throwable) {
                 Log.e("LoginActivity", "Network Failure: ${t.message}")
-                Toast.makeText(this@LoginActivity, "Network error: ${t.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@LoginActivity, getString(R.string.network_error)+": ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
     }
 
+    /**
+     * Function to handle error responses from the API
+     */
     private fun handleErrorResponse(response: Response<SimpleResponseDTO>) {
         val errorBody = response.errorBody()?.string()
         if (errorBody != null) {
             try {
                 val gson = Gson()
                 val errorResponse: SimpleResponseDTO = gson.fromJson(errorBody, SimpleResponseDTO::class.java)
-                Toast.makeText(this@LoginActivity, errorResponse.error ?: "Unknown error", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@LoginActivity, errorResponse.error ?: getString(R.string.unknown_error), Toast.LENGTH_SHORT).show()
             } catch (e: JsonSyntaxException) {
-                Toast.makeText(this@LoginActivity, "Error parsing response: $errorBody", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@LoginActivity, getString(R.string.error_parsing_response)+": $errorBody", Toast.LENGTH_SHORT).show()
             } catch (e: IllegalStateException) {
                 // Handle case where response is not a JSON object
-                Toast.makeText(this@LoginActivity, "Unexpected response format: $errorBody", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@LoginActivity, getString(R.string.unexpected_response_format)+": $errorBody", Toast.LENGTH_SHORT).show()
             }
         } else {
-            Toast.makeText(this@LoginActivity, "Unknown error", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this@LoginActivity, getString(R.string.unknown_error), Toast.LENGTH_SHORT).show()
         }
     }
 }

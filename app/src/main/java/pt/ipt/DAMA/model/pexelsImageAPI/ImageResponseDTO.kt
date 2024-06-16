@@ -2,6 +2,9 @@ package pt.ipt.DAMA.model.pexelsImageAPI
 
 import com.google.gson.annotations.SerializedName
 
+/**
+ * Data class to represent the response from the Pexels API
+ */
 data class ImageResponseDTO(
     @SerializedName("page") val page: Int,
     @SerializedName("per_page") val perPage: Int,

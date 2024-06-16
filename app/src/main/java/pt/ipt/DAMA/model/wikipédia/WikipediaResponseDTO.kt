@@ -2,6 +2,9 @@ package pt.ipt.DAMA.model.wikipédia
 
 import com.google.gson.annotations.SerializedName
 
+/**
+ * Data class to represent a Wikipedia API response
+ */
 data class WikipediaResponseDTO(
     @SerializedName("batchcomplete") val batchComplete: Boolean,
     @SerializedName("query") val query: WikiQuery

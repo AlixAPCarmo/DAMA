@@ -35,23 +35,30 @@ class ArUtils(
     private val handler = Handler(Looper.getMainLooper())
 
     init {
-        showPopup()
+        showPopup() // Show initial guidance popup
+        // Create an anchor when user taps on an AR plane
         arFragment.setOnTapArPlaneListener { hitResult, _, _ ->
             anchor = hitResult.createAnchor()
         }
     }
+
+    /**
+     * Add a sphere to the AR scene at the specified position
+     */
     fun addSphereToPosition(
         name: String,
         x: Float,
         y: Float,
         z: Float
     ) {
+        // If anchor is not set, retry after a delay
         if (anchor == null) {
             handler.postDelayed({
                 addSphereToPosition(name,x, y, z)
             }, 1000)
             return
         }
+        // Create a sphere and add it to the scene
         MaterialFactory.makeOpaqueWithColor(context, Color(ContextCompat.getColor(context, R.color.primaryColor)))
             .thenAccept { material ->
                 val sphere = ShapeFactory.makeSphere(0.1f, Vector3(0.0f, 0.0f, 0.0f), material)
@@ -64,6 +71,7 @@ class ArUtils(
                     setParent(anchorNode)
                     renderable = sphere
                     select()
+                    // Add a listener to show info panel when sphere is tapped
                     setOnTapListener { _, _ ->
                         createInfoPanel(this, name)
                     }
@@ -76,6 +84,9 @@ class ArUtils(
             }
     }
 
+    /**
+     * Check if ARCore is available on the device and request installation if needed
+     */
     fun checkARCoreAvailability(activity: Activity): Boolean {
         val availability = ArCoreApk.getInstance().checkAvailability(context)
         if (availability.isTransient) {
@@ -92,7 +103,7 @@ class ArUtils(
                         e.printStackTrace()
                         Toast.makeText(
                             context,
-                            "Error requesting ARCore installation",
+                            context.getString(R.string.error_requesting_arcore_installation),
                             Toast.LENGTH_LONG
                         ).show()
                         false
@@ -102,7 +113,7 @@ class ArUtils(
                 ArCoreApk.Availability.UNSUPPORTED_DEVICE_NOT_CAPABLE -> {
                     Toast.makeText(
                         context,
-                        "ARCore is not supported on this device",
+                        context.getString(R.string.arcore_is_not_supported_on_this_device),
                         Toast.LENGTH_LONG
                     ).show()
                     false
@@ -111,7 +122,7 @@ class ArUtils(
                 else -> {
                     Toast.makeText(
                         context,
-                        "ARCore availability unknown",
+                        context.getString(R.string.arcore_availability_unknown),
                         Toast.LENGTH_LONG
                     ).show()
                     false
@@ -120,6 +131,9 @@ class ArUtils(
         }
     }
 
+    /**
+     * Create an informational panel above the sphere when tapped
+     */
     private fun createInfoPanel(sphereNode: TransformableNode, name: String) {
         ViewRenderable.builder()
             .setView(context, R.layout.info_panel)
@@ -147,7 +161,6 @@ class ArUtils(
                     }
 
                 }
-                // Adiciona um listener de toque para mostrar/ocultar o painel de informações
                 sphereNode.setOnTapListener{ _, _ ->
                     if (infoNode.parent == null) {
                         sphereNode.addChild(infoNode)
@@ -157,7 +170,7 @@ class ArUtils(
                 }
 
 
-                // Listener para atualizar a orientação a cada frame
+                // Update node orientation to always face the camera
                 arFragment.arSceneView.scene.addOnUpdateListener {
                     val cameraPosition = arFragment.arSceneView.scene.camera.worldPosition
                     val nodePosition = infoNode.worldPosition
@@ -171,10 +184,13 @@ class ArUtils(
             }
     }
 
+    /**
+     * Show an initial popup with guidance for the user
+     */
     private fun showPopup() {
         val builder = AlertDialog.Builder(context)
-        builder.setTitle("Aviso")
-        builder.setMessage("Toque na tela para posicionar os objetos e mantenha o dispositivo imóvel por alguns segundos para estabilização. ")
+        builder.setTitle(context.getString(R.string.aviso))
+        builder.setMessage(context.getString(R.string.toque_na_tela_para_posicionar_os_objetos_e_mantenha_o_dispositivo_im_vel_por_alguns_segundos_para_estabiliza_o))
 
         builder.setPositiveButton("OK") { dialog, _ ->
             dialog.dismiss()
@@ -184,6 +200,9 @@ class ArUtils(
         dialog.show()
     }
 
+    /**
+     * Remove all nodes from the AR scene
+     */
     fun removeAllNodes() {
         val scene = arFragment.arSceneView.scene
         val children = scene.children.filterIsInstance<AnchorNode>().toList()

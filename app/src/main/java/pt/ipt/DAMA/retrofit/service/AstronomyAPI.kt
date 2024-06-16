@@ -5,6 +5,9 @@ import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.QueryMap
 
+/**
+ * Interface to represent the Astronomy API
+ */
 interface AstronomyAPI {
     @GET("bodies/positions")
     fun getBodyPositions(

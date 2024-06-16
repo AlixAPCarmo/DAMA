@@ -8,6 +8,7 @@ import android.util.Log
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.LinearLayout
+import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -23,7 +24,7 @@ import pt.ipt.DAMA.model.API.CelestialFindRequestDTO
 import pt.ipt.DAMA.model.API.SimpleResponseDTO
 import pt.ipt.DAMA.model.astronomyAPI.AstronomyPositionResponseDTO
 import pt.ipt.DAMA.model.astronomyAPI.AstronomyRequestDTO
-import pt.ipt.DAMA.model.pexelsImageAPI.ImageResponseDTO
+import pt.ipt.DAMA.model.wikipédia.WikipediaResponseDTO
 import pt.ipt.DAMA.retrofit.MyCookieJar
 import pt.ipt.DAMA.retrofit.RetrofitInitializer
 import pt.ipt.DAMA.ui.adapter.ItemList
@@ -55,6 +56,7 @@ class ListActivity : AppCompatActivity() {
         this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         setContentView(R.layout.activity_list)
 
+        // Setup RecyclerView with a LinearLayoutManager
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
         adapter = ListAdapter(listItems, this) { item -> findByNameandUser(item) }
@@ -68,7 +70,7 @@ class ListActivity : AppCompatActivity() {
             val intent = Intent(this, ArActivity::class.java)
             startActivity(intent)
         }
-
+        // Setup Logout button to logout the user
         btnLogout = findViewById(R.id.logout_button)
         btnLogout.setOnClickListener { logoutUser() }
 
@@ -99,7 +101,10 @@ class ListActivity : AppCompatActivity() {
         loadDataName()
     }
 
-    private fun loadDataName() {
+    /**
+     * Load data for celestial objects from the Astronomy API
+     */
+    private fun loadDataName(){
         val pos = gpsManager.getCurrentLocation()
         if (pos != null) {
             val parameters = AstronomyRequestDTO(
@@ -116,6 +121,7 @@ class ListActivity : AppCompatActivity() {
                     response.body()?.let { res ->
                         val size = res.data.table.rows.size
                         var count = 0
+                        // Load data from the Astronomy API
                         res.data.table.rows.forEach {
                             count++
                             val name = it.entry.name
@@ -275,6 +281,9 @@ class ListActivity : AppCompatActivity() {
         })
     }
 
+    /**
+     * Logout the user
+     */
     private fun logoutUser() {
         retrofit.API().logoutUser().enqueue(object : Callback<SimpleResponseDTO> {
             override fun onResponse(call: Call<SimpleResponseDTO>, response: Response<SimpleResponseDTO>) {
@@ -283,12 +292,19 @@ class ListActivity : AppCompatActivity() {
                     if (logoutResponse != null && logoutResponse.ok) {
                         // Clear cookies
                         MyCookieJar(this@ListActivity).clearCookies(getString(R.string.ourAPI).toHttpUrlOrNull()!!)
-
-                        logMessage("Logged out successfully")
+                        Toast.makeText(
+                            this@ListActivity,
+                            getString(R.string.logged_out_successfully),
+                            Toast.LENGTH_SHORT
+                        ).show()
                         val intent = Intent(this@ListActivity, MainActivity::class.java)
                         startActivity(intent)
                     } else {
-                        logMessage(logoutResponse?.error ?: "Unknown error")
+                        Toast.makeText(
+                            this@ListActivity,
+                            logoutResponse?.error ?: getString(R.string.unknown_error),
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 } else {
                     handleErrorResponse(response)
@@ -296,27 +312,46 @@ class ListActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<SimpleResponseDTO>, t: Throwable) {
-                Log.e("CelestialActivity", "Network Failure: ${t.message}")
-                logMessage("Network error: ${t.message}")
+                Toast.makeText(
+                    this@ListActivity,
+                    getString(R.string.network_error)+": ${t.message}",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         })
     }
 
+    /**
+     * Function to handle error responses from the API
+     */
     private fun handleErrorResponse(response: Response<SimpleResponseDTO>) {
         val errorBody = response.errorBody()?.string()
         if (errorBody != null) {
             try {
                 val gson = Gson()
-                val errorResponse: SimpleResponseDTO = gson.fromJson(errorBody, SimpleResponseDTO::class.java)
-                logMessage(errorResponse.error ?: "Unknown error")
+                val errorResponse: SimpleResponseDTO =
+                    gson.fromJson(errorBody, SimpleResponseDTO::class.java)
+                Toast.makeText(
+                    this@ListActivity,
+                    errorResponse.error ?: getString(R.string.unknown_error),
+                    Toast.LENGTH_SHORT
+                ).show()
             } catch (e: JsonSyntaxException) {
-                logMessage("Error parsing response: $errorBody")
+                Toast.makeText(
+                    this@ListActivity,
+                    getString(R.string.error_parsing_response)+": $errorBody",
+                    Toast.LENGTH_SHORT
+                ).show()
             } catch (e: IllegalStateException) {
                 // Handle case where response is not a JSON object
-                logMessage("Unexpected response format: $errorBody")
+                Toast.makeText(
+                    this@ListActivity,
+                    getString(R.string.unexpected_response_format)+": $errorBody",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         } else {
-            logMessage("Unknown error")
+            Toast.makeText(this@ListActivity, getString(R.string.unknown_error), Toast.LENGTH_SHORT).show()
         }
     }
 

@@ -6,6 +6,9 @@ import retrofit2.http.GET
 import retrofit2.http.Headers
 import retrofit2.http.Query
 
+/**
+ * Interface to represent the Pexels API
+ */
 interface ImageAPI {
     @Headers("Authorization: Jasdk0aFfBv15F2mgUqm4iGkUzYcOA6dGcBbSd9jCFzSF9TXvng57AdR")
     @GET("search")

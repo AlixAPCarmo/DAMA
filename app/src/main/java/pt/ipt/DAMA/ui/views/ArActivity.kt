@@ -1,12 +1,11 @@
 package pt.ipt.DAMA.ui.views
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.ActivityInfo
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.View
 import android.widget.ImageButton
 import android.widget.Toast
@@ -34,6 +33,7 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 class ArActivity : AppCompatActivity() {
+    // Declare necessary variables and components
     private lateinit var gpsManager: GpsManager
     private lateinit var arUtils: ArUtils
     private lateinit var permissionManager: PermissionsManager
@@ -44,13 +44,15 @@ class ArActivity : AppCompatActivity() {
     private lateinit var btnRefresh: ImageButton
     private lateinit var btnList: ImageButton
     private lateinit var btnLogout: ImageButton
+    private lateinit var btnAbout: ImageButton
 
     private val handler = Handler(Looper.getMainLooper())
-    private val arScale = 4.0
+    private val arScale = 4.0 // Scale factor for positioning AR objects
 
+    @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         setContentView(R.layout.activity_ar)
 
         // Initialize permission manager
@@ -63,30 +65,32 @@ class ArActivity : AppCompatActivity() {
             permissionManager.requestPermissions()
         }
 
-        // Inicializar componentes de visualização
+        // Inicializar UI componentes
         arFragment = supportFragmentManager.findFragmentById(R.id.fragment) as ArFragment
         btnRefresh = findViewById(R.id.refreshButton)
         btnList = findViewById(R.id.listButton)
         btnLogout = findViewById(R.id.logoutButton)
+        btnAbout = findViewById(R.id.aboutButton)
 
-        // Inicializar variáveis
+        // Inicializar services
         gpsManager = GpsManager(this)
         gpsManager.getLocation()
         retrofit = RetrofitInitializer(this)
         arUtils = ArUtils(this, arFragment)
 
+        // Login checks and UI updates based on login status
         if (!MyCookieJar(this).isUserLoggedIn()){
-            Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.user_not_logged_in), Toast.LENGTH_SHORT).show()
             btnList.visibility = View.GONE
             btnLogout.setImageResource(R.drawable.login_icon)
         }
 
-        //define actions for buttons
+        // Button actions setup
         btnRefresh.setOnClickListener {
             arUtils.removeAllNodes()
             requestPositions()
             if (!MyCookieJar(this).isUserLoggedIn()){
-                Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.user_not_logged_in), Toast.LENGTH_SHORT).show()
                 btnList.visibility = View.GONE
                 btnLogout.setImageResource(R.drawable.login_icon)
             }else{
@@ -108,9 +112,18 @@ class ArActivity : AppCompatActivity() {
             }
 
         }
+
+        btnAbout.setOnClickListener {
+            val intent = Intent(this, AboutUsActivity::class.java)
+            startActivity(intent)
+        }
+
         requestPositions()
     }
 
+    /**
+     * Function to request the positions of celestial bodies from the Astronomy API
+     */
     private fun requestPositions() {
         val pos = gpsManager.getCurrentLocation()
         if (pos != null) {
@@ -140,6 +153,9 @@ class ArActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Function to transform the data received from the Astronomy API into AR positions
+     */
     private fun transformData(positions: List<AstronomyPositionResponseDTO.Data.Table.Row>) {
         fun degreesToRadians(degrees: Double): Double {
             return degrees * (PI / 180.0)
@@ -160,6 +176,9 @@ class ArActivity : AppCompatActivity() {
         positionNodes()
     }
 
+    /**
+     * Function to position the AR nodes in the scene
+     */
     private fun positionNodes(){
         if (positions.isEmpty() && !arUtils.checkARCoreAvailability(this)){
             handler.postDelayed({positionNodes()} , 1000)
@@ -176,6 +195,9 @@ class ArActivity : AppCompatActivity() {
 
     }
 
+    /**
+     * Function to logout the user from the application
+     */
     private fun logoutUser() {
         retrofit.API().logoutUser().enqueue(object : Callback<SimpleResponseDTO> {
             override fun onResponse(
@@ -190,7 +212,7 @@ class ArActivity : AppCompatActivity() {
 
                         Toast.makeText(
                             this@ArActivity,
-                            "Logged out successfully",
+                            getString(R.string.logged_out_successfully),
                             Toast.LENGTH_SHORT
                         ).show()
                         val intent = Intent(this@ArActivity, MainActivity::class.java)
@@ -198,7 +220,7 @@ class ArActivity : AppCompatActivity() {
                     } else {
                         Toast.makeText(
                             this@ArActivity,
-                            logoutResponse?.error ?: "Unknown error",
+                            logoutResponse?.error ?: getString(R.string.unknown_error),
                             Toast.LENGTH_SHORT
                         ).show()
                     }
@@ -208,16 +230,18 @@ class ArActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<SimpleResponseDTO>, t: Throwable) {
-                Log.e("CelestialActivity", "Network Failure: ${t.message}")
                 Toast.makeText(
                     this@ArActivity,
-                    "Network error: ${t.message}",
+                    getString(R.string.network_error)+": ${t.message}",
                     Toast.LENGTH_SHORT
                 ).show()
             }
         })
     }
 
+    /**
+     * Function to handle error responses from the API
+     */
     private fun handleErrorResponse(response: Response<SimpleResponseDTO>) {
         val errorBody = response.errorBody()?.string()
         if (errorBody != null) {
@@ -227,29 +251,32 @@ class ArActivity : AppCompatActivity() {
                     gson.fromJson(errorBody, SimpleResponseDTO::class.java)
                 Toast.makeText(
                     this@ArActivity,
-                    errorResponse.error ?: "Unknown error",
+                    errorResponse.error ?: getString(R.string.unknown_error),
                     Toast.LENGTH_SHORT
                 ).show()
             } catch (e: JsonSyntaxException) {
                 Toast.makeText(
                     this@ArActivity,
-                    "Error parsing response: $errorBody",
+                    getString(R.string.error_parsing_response)+": $errorBody",
                     Toast.LENGTH_SHORT
                 ).show()
             } catch (e: IllegalStateException) {
                 // Handle case where response is not a JSON object
                 Toast.makeText(
                     this@ArActivity,
-                    "Unexpected response format: $errorBody",
+                    getString(R.string.unexpected_response_format)+": $errorBody",
                     Toast.LENGTH_SHORT
                 ).show()
             }
         } else {
-            Toast.makeText(this@ArActivity, "Unknown error", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this@ArActivity, getString(R.string.unknown_error), Toast.LENGTH_SHORT).show()
         }
     }
 }
 
+/**
+ * Data class to represent the position of a celestial body in AR
+ */
 data class PositionData(
     val name: String,
     val x: Float,
