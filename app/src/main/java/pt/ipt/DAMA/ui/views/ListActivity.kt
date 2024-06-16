@@ -85,6 +85,7 @@ class ListActivity : AppCompatActivity() {
         if (!MyCookieJar(this).isUserLoggedIn()) {
             searchBarLayout = findViewById(R.id.search_bar_layout)
             searchBarLayout.visibility = LinearLayout.GONE
+            btnLogout.setImageResource(R.drawable.login_icon)
         } else {
             searchInput = findViewById(R.id.search_input)
             searchButton = findViewById(R.id.search_button)

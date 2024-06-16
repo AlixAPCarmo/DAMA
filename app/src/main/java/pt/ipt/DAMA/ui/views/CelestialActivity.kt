@@ -63,10 +63,20 @@ class CelestialActivity : AppCompatActivity() {
         contentTextView = findViewById(R.id.content)
         imageCarousel = findViewById(R.id.image_carousel)
 
-        // Set up logout button click listener
-        logoutButton.setOnClickListener {
-            logoutUser()
+        if (MyCookieJar(this).isUserLoggedIn()) {
+            // Set up logout button click listener
+            logoutButton.setOnClickListener {
+                logoutUser()
+            }
+        } else {
+            logoutButton.setImageResource(R.drawable.login_icon)
+            logoutButton.setOnClickListener {
+                    val intent = Intent(this, LoginActivity::class.java)
+                startActivity(intent)
+            }
         }
+
+
 
         // Set up back button click listener
         backButton = findViewById(R.id.back_button)
