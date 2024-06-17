@@ -36,7 +36,7 @@
     <string name="title">Título</string>
     <string name="more_info">Mais info +</string>
     <string name="aviso">Aviso</string>
-    <string name="toque_na_tela_para_posicionar_os_objetos_e_mantenha_o_dispositivo_im_vel_por_alguns_segundos_para_estabiliza_o">"Toque no ecrã para posicionar os objetos e mantenha o dispositivo imóvel por alguns segundos para estabilização. "</string>
+    <string name="toque_na_tela_para_posicionar_os_objetos_e_mantenha_o_dispositivo_im_vel_por_alguns_segundos_para_estabiliza_o">Ao usar o SkyMapper, toca no ecrã para posicionar objetos e mantém o dispositivo estável. Usa sob supervisão adulta e mantém-te atento ao ambiente para explorar com segurança.</string>
     <string name="error_requesting_arcore_installation">Erro ao solicitar a instalação do ARCore</string>
     <string name="arcore_is_not_supported_on_this_device">O ARCore não é suportado neste dispositivo</string>
     <string name="arcore_availability_unknown">Disponibilidade do ARCore desconhecida</string>
@@ -58,4 +58,14 @@
     <string name="search_hint">Procurar por corpo celeste</string>
     <string name="search">Procurar</string>
     <string name="delete">Apagar[...]</string>
+    <string name="no_translation_found">Tradução não encontrada</string>
+    <string name="no_content_generated">Conteúdo não gerado</string>
+    <string name="no_images_found">Imagem não encontrada</string>
+    <string name="please_enter_your_email">Por favor introduza o seu email</string>
+    <string name="please_enter_the_token_and_new_password">Por favor introduz o token e a nova password</string>
+    <string name="password_reset_email_sent_successfully">Email para recuperar palavra passe enviado com sucesso</string>
+    <string name="error_sending_password_reset_email">Erro ao enviar o email para recuperar a palavra passe</string>
+    <string name="request_failed">Falha no pedido</string>
+    <string name="password_reset_successfully">Palavra passe recuperada com sucesso</string>
+    <string name="error_resetting_password">Erro ao recuperar a palavra passe</string>
 </resources>
