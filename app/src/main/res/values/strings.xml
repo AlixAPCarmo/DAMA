@@ -47,7 +47,7 @@
     <string name="title">Title</string>
     <string name="more_info">More info +</string>
     <string name="aviso">Warning</string>
-    <string name="toque_na_tela_para_posicionar_os_objetos_e_mantenha_o_dispositivo_im_vel_por_alguns_segundos_para_estabiliza_o">"Tap the screen to position the objects and hold the device still for a few seconds to stabilize it. "</string>
+    <string name="toque_na_tela_para_posicionar_os_objetos_e_mantenha_o_dispositivo_im_vel_por_alguns_segundos_para_estabiliza_o">When using SkyMapper, tap the screen to place objects and keep the device steady. Use under adult supervision and stay aware of your surroundings to explore safely.</string>
     <string name="error_requesting_arcore_installation">Error requesting ARCore installation</string>
     <string name="arcore_is_not_supported_on_this_device">ARCore is not supported on this device</string>
     <string name="arcore_availability_unknown">ARCore availability unknown</string>
